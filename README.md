@@ -4,6 +4,7 @@ ESTRUTURA DE PASTA MVC
     pokemon/
     ├── index.php
     ├── configuracao.php
+    |-- autoload.php
     ├── src/
     │   ├── models/
     │   │   ├── Conexao.php
