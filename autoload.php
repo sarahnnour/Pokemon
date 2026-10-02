@@ -3,8 +3,10 @@
 spl_autoload_register(function ($classe) {
     // Lista de diretórios onde o Autoload deve buscar
     $diretorios = [
-        __DIR__ . '/src/class/',
-        __DIR__ . '/src/controllers/'
+        __DIR__ . '/src/controllers/',
+        __DIR__ . '/src/excecoes/',
+        __DIR__ . '/src/models/',
+        __DIR__ . '/src/traits/'
     ];
 
     foreach ($diretorios as $diretorio) {
