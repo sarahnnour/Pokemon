@@ -11,16 +11,17 @@ USE jogo_pokemon;
 CREATE TABLE usuario (
     id INT NOT NULL AUTO_INCREMENT,
     nome VARCHAR(50) NOT NULL,
+    senha VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL,
     dinheiro INT NOT NULL DEFAULT 1000,
     PRIMARY KEY (id)
-) ENGINE=InnoDB;
-
+) 
 -- Catálogo com todos os Pokémons do jogo (Pokemon.php e pasta pokemons/)
 CREATE TABLE pokemon (
     id INT NOT NULL AUTO_INCREMENT,
     nome VARCHAR(50) NOT NULL,
     tipo VARCHAR(30) NOT NULL,
-    estagio INT NOT NULL,
+    nivel INT NOT NULL,
     hp_maximo INT NOT NULL,
     ataque INT NOT NULL,
     defesa INT NOT NULL,
@@ -30,17 +31,17 @@ CREATE TABLE pokemon (
     PRIMARY KEY (id),
     CONSTRAINT fk_pokemon_evolucao
         FOREIGN KEY (proxima_evolucao_id) REFERENCES pokemon(id)
-) ENGINE=InnoDB;
+) 
 
 -- Itens do Poké Mart (Item.php)
-CREATE TABLE loja (
+CREATE TABLE item (
     id INT NOT NULL AUTO_INCREMENT,
     nome VARCHAR(50) NOT NULL,
     descricao VARCHAR(150) NOT NULL,
     preco INT NOT NULL,
     tipo VARCHAR(30) NOT NULL,
     PRIMARY KEY (id)
-) ENGINE=InnoDB;
+)
 
 -- Time de cada usuário (Time.php / Team Builder)
 -- Guarda o estado do Pokémon para aquele jogador (HP atual e condição)
@@ -48,8 +49,6 @@ CREATE TABLE time (
     id INT NOT NULL AUTO_INCREMENT,
     usuario_id INT NOT NULL,
     pokemon_id INT NOT NULL,
-    posicao INT NOT NULL DEFAULT 1,
-    hp_atual INT NOT NULL,
     status_condicao VARCHAR(20) NOT NULL DEFAULT 'Normal',
     PRIMARY KEY (id),
     CONSTRAINT fk_time_usuario
@@ -57,7 +56,7 @@ CREATE TABLE time (
         ON DELETE CASCADE,
     CONSTRAINT fk_time_pokemon
         FOREIGN KEY (pokemon_id) REFERENCES pokemon(id)
-) ENGINE=InnoDB;
+)
 
 -- DDL de alteração: o mesmo Pokémon não pode aparecer duas vezes no time do usuário
 ALTER TABLE time ADD UNIQUE KEY uk_time_usuario_pokemon (usuario_id, pokemon_id);
@@ -77,7 +76,7 @@ CREATE TABLE log_batalha (
         ON DELETE CASCADE,
     CONSTRAINT fk_log_batalha_pokemon
         FOREIGN KEY (pokemon_id) REFERENCES pokemon(id)
-) ENGINE=InnoDB;
+) 
 
 
 -- ==============================================================================
@@ -85,27 +84,27 @@ CREATE TABLE log_batalha (
 -- ==============================================================================
 
 
-INSERT INTO pokemon (id, nome, tipo, estagio, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
+INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
 (9,  'Venossauro', 'Planta', 3, 80, 82, 83, 80, 0, NULL),
 (10, 'Charizard',  'Fogo',   3, 78, 84, 78, 100, 0, NULL),
 (11, 'Blastoise',  'Agua',   3, 79, 83, 100, 78, 0, NULL);
 
 -- Estágio 2 (Evolucao2)
-INSERT INTO pokemon (id, nome, tipo, estagio, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
+INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
 (5, 'Ivyssauro',  'Planta', 2, 60, 62, 63, 60, 0, 9),
 (6, 'Charmeleon', 'Fogo',   2, 58, 64, 58, 80, 0, 10),
 (7, 'Wartortle',  'Agua',   2, 59, 63, 80, 58, 0, 11),
 (8, 'Raichu',     'Raio',   2, 60, 90, 55, 110, 0, NULL);
 
 -- Estágio 1 (Evolucao1)
-INSERT INTO pokemon (id, nome, tipo, estagio, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
+INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
 (1, 'Bulbassauro', 'Planta', 1, 45, 49, 49, 45, 0, 5),
 (2, 'Charmander',  'Fogo',   1, 39, 52, 43, 65, 0, 6),
 (3, 'Squirtle',    'Agua',   1, 44, 48, 65, 43, 0, 7),
 (4, 'Pikachu',     'Raio',   1, 35, 55, 40, 90, 0, 8);
 
 -- Itens obrigatórios do Poké Mart
-INSERT INTO loja (nome, descricao, preco, tipo) VALUES
+INSERT INTO item (nome, descricao, preco, tipo) VALUES
 -- Restauradores de HP
 ('Potion', 'Recupera 20 HP', 200, 'restaurador'),
 ('Super Potion', 'Recupera 50 HP', 700, 'restaurador'),
@@ -114,10 +113,6 @@ INSERT INTO loja (nome, descricao, preco, tipo) VALUES
 ('Full Restore', 'Recupera 100% do HP e cura todos os status', 3000, 'restaurador'),
 -- Cura de condições
 ('Antidote', 'Cura envenenamento', 100, 'cura'),
-('Burn Heal', 'Cura queimadura', 250, 'cura'),
-('Ice Heal', 'Cura congelamento', 250, 'cura'),
-('Awakening', 'Cura sono', 250, 'cura'),
-('Paralyze Heal', 'Cura paralisia', 200, 'cura'),
 ('Full Heal', 'Cura todos os status', 600, 'cura'),
 -- Reviver
 ('Revive', 'Revive um Pokémon desmaiado com metade da vida', 1500, 'reviver'),
