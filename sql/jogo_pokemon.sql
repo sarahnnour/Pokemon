@@ -3,7 +3,7 @@
 -- Disciplinas: Programação Orientada a Objetos I, Linguagens para a Web II, BD II
 -- Banco de Dados: jogo_pokemon (MySQL / MariaDB)
 -- ==============================================================================
-
+-- oi
 -- ==============================================================================
 -- 1. DDL (Data Definition Language) - Criação do Banco, Tabelas e Restrições
 -- ==============================================================================
