@@ -85,37 +85,36 @@ CREATE TABLE log_batalha (
 
 
 INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
-(9,  'Venossauro', 'Planta', 3, 80, 82, 83, 80, 0, NULL),
-(10, 'Charizard',  'Fogo',   3, 78, 84, 78, 100, 0, NULL),
-(11, 'Blastoise',  'Agua',   3, 79, 83, 100, 78, 0, NULL);
+(9,  'Venossauro', 'Planta', 30, 80, 82, 83, 80, 0, NULL),
+(10, 'Charizard',  'Fogo',   30, 78, 84, 78, 100, 0, NULL),
+(11, 'Blastoise',  'Agua',   30, 79, 83, 100, 78, 0, NULL);
 
 -- Estágio 2 (Evolucao2)
 INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
-(5, 'Ivyssauro',  'Planta', 2, 60, 62, 63, 60, 0, 9),
-(6, 'Charmeleon', 'Fogo',   2, 58, 64, 58, 80, 0, 10),
-(7, 'Wartortle',  'Agua',   2, 59, 63, 80, 58, 0, 11),
-(8, 'Raichu',     'Raio',   2, 60, 90, 55, 110, 0, NULL);
+(5, 'Ivyssauro',  'Planta', 15, 60, 62, 63, 60, 0, 9),
+(6, 'Charmeleon', 'Fogo',   15, 58, 64, 58, 80, 0, 10),
+(7, 'Wartortle',  'Agua',   15, 59, 63, 80, 58, 0, 11),
+(8, 'Raichu',     'Raio',   20, 60, 90, 55, 110, 0, NULL);
 
 -- Estágio 1 (Evolucao1)
 INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
-(1, 'Bulbassauro', 'Planta', 1, 45, 49, 49, 45, 0, 5),
-(2, 'Charmander',  'Fogo',   1, 39, 52, 43, 65, 0, 6),
-(3, 'Squirtle',    'Agua',   1, 44, 48, 65, 43, 0, 7),
-(4, 'Pikachu',     'Raio',   1, 35, 55, 40, 90, 0, 8);
+(1, 'Bulbassauro', 'Planta', 5, 45, 49, 49, 45, 0, 5),
+(2, 'Charmander',  'Fogo',   5, 39, 52, 43, 65, 0, 6),
+(3, 'Squirtle',    'Agua',   5, 44, 48, 65, 43, 0, 7),
+(4, 'Pikachu',     'Raio',   5, 35, 55, 40, 90, 0, 8);
 
 -- Itens obrigatórios do Poké Mart
 INSERT INTO item (nome, descricao, preco, tipo) VALUES
 -- Restauradores de HP
 ('Potion', 'Recupera 20 HP', 200, 'restaurador'),
-('Super Potion', 'Recupera 50 HP', 700, 'restaurador'),
+('Super Potion', 'Recupera 50 HP', 400, 'restaurador'),
 ('Hyper Potion', 'Recupera 200 HP', 1200, 'restaurador'),
-('Max Potion', 'Recupera 100% do HP', 2500, 'restaurador'),
-('Full Restore', 'Recupera 100% do HP e cura todos os status', 3000, 'restaurador'),
+('Max Potion', 'Recupera 100% do HP', 2000, 'restaurador'),
 -- Cura de condições
 ('Antidote', 'Cura envenenamento', 100, 'cura'),
-('Full Heal', 'Cura todos os status', 600, 'cura'),
 -- Reviver
 ('Revive', 'Revive um Pokémon desmaiado com metade da vida', 1500, 'reviver'),
+('Full Revive', 'Revive um Pokémon desmaiado com toda a vida', 3000, 'reviver'),
 -- Evolução
 ('Pedra de Evolução', 'Evolui um Pokémon para o próximo estágio', 2100, 'evolucao');
 
