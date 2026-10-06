@@ -1,30 +1,37 @@
 <?php
+/**
+ * Temos que lembrar de usar em todos os outro arquivos:
+ *   require_once 'conexao.php';
+ *   $pdo = getConnection();
+ */
 
-class Conexao
+function getConnection(): PDO
 {
-	private static $conexao = null;
+    $host    = "localhost";
+    $dbname  = "jogo_pokemon";  
+    $user    = "root";
+    $pass    = "";          
+    $charset = "utf8mb4";
 
-	public static function conectar()
-	{
-		if (self::$conexao === null) {
-			$host = getenv('DB_HOST') ?: 'localhost';
-			$dbname = getenv('DB_NAME') ?: 'jogo_pokemon';
-			$username = getenv('DB_USER') ?: 'root';
-			$password = getenv('DB_PASS') ?: '';
 
-			$dsn = "mysql:host={$host};dbname={$dbname};charset=utf8mb4";
+    $dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";
 
-			try {
-				self::$conexao = new PDO($dsn, $username, $password, [
-					PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-					PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-					PDO::ATTR_EMULATE_PREPARES => false,
-				]);
-			} catch (PDOException $e) {
-				throw new PDOException('Erro na conexão: ' . $e->getMessage(), (int) $e->getCode(), $e);
-			}
-		}
+    try {
+        $conn = new PDO($dsn, $user, $pass);
 
-		return self::$conexao;
-	}
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+        return $conn;
+    } catch (PDOException $e) {
+        die("Erro de conexão: " . $e->getMessage());
+    }
 }
+
+
+// Para testes:
+
+/*if (basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'])) {
+    $pdo = getConnection();
+    echo "Conectado com sucesso!";
+} */
