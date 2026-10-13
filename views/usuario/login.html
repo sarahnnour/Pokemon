@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Pokémon</title>
+    <link rel="stylesheet" href="../../assets/css/estilo.css">
+</head>
+<body>
+    <div class="caixa">
+        <h1>Pokémon</h1>
+
+        <p id="erro" class="erro"></p>
+
+        <form action="../../src/controllers/UsuarioController.php?acao=entrar" method="post">
+            <label>Nome <input type="text" name="nome" required></label>
+            <label>Senha <input type="password" name="senha" required></label>
+            <input type="submit" value="Entrar">
+        </form>
+    </div>
+
+    <script>
+        if (window.location.search.indexOf('erro=1') != -1) {
+            document.getElementById('erro').innerHTML = 'Nome ou senha incorretos';
+        }
+    </script>
+</body>
+</html>
