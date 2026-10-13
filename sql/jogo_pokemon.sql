@@ -1,4 +1,3 @@
-
 -- ==============================================================================
 -- 1. DDL (Data Definition Language)
 -- ==============================================================================
@@ -15,7 +14,8 @@ CREATE TABLE usuario (
     email VARCHAR(100) NOT NULL,
     dinheiro INT NOT NULL DEFAULT 1000,
     PRIMARY KEY (id)
-) 
+);
+
 -- Catálogo com todos os Pokémons do jogo (Pokemon.php e pasta pokemons/)
 CREATE TABLE pokemon (
     id INT NOT NULL AUTO_INCREMENT,
@@ -31,7 +31,7 @@ CREATE TABLE pokemon (
     PRIMARY KEY (id),
     CONSTRAINT fk_pokemon_evolucao
         FOREIGN KEY (proxima_evolucao_id) REFERENCES pokemon(id)
-) 
+);
 
 -- Itens do Poké Mart (Item.php)
 CREATE TABLE item (
@@ -41,7 +41,7 @@ CREATE TABLE item (
     preco INT NOT NULL,
     tipo VARCHAR(30) NOT NULL,
     PRIMARY KEY (id)
-)
+);
 
 -- Time de cada usuário (Time.php / Team Builder)
 -- Guarda o estado do Pokémon para aquele jogador (HP atual e condição)
@@ -49,6 +49,7 @@ CREATE TABLE time (
     id INT NOT NULL AUTO_INCREMENT,
     usuario_id INT NOT NULL,
     pokemon_id INT NOT NULL,
+    hp_atual INT NOT NULL,
     status_condicao VARCHAR(20) NOT NULL DEFAULT 'Normal',
     PRIMARY KEY (id),
     CONSTRAINT fk_time_usuario
@@ -56,7 +57,7 @@ CREATE TABLE time (
         ON DELETE CASCADE,
     CONSTRAINT fk_time_pokemon
         FOREIGN KEY (pokemon_id) REFERENCES pokemon(id)
-)
+);
 
 -- DDL de alteração: o mesmo Pokémon não pode aparecer duas vezes no time do usuário
 ALTER TABLE time ADD UNIQUE KEY uk_time_usuario_pokemon (usuario_id, pokemon_id);
@@ -76,14 +77,19 @@ CREATE TABLE log_batalha (
         ON DELETE CASCADE,
     CONSTRAINT fk_log_batalha_pokemon
         FOREIGN KEY (pokemon_id) REFERENCES pokemon(id)
-) 
+);
 
 
 -- ==============================================================================
 -- 2. DML (Data Manipulation Language) - Dados fixos do jogo
 -- ==============================================================================
 
+-- Usuários de teste (para o login e a troca de perfis)
+INSERT INTO usuario (nome, senha, email) VALUES
+('Ash', '123', 'ash@email.com'),
+('Misty', '123', 'misty@email.com');
 
+-- Estágio 3 (Evolucao3)
 INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
 (9,  'Venossauro', 'Planta', 30, 80, 82, 83, 80, 0, NULL),
 (10, 'Charizard',  'Fogo',   30, 78, 84, 78, 100, 0, NULL),
@@ -129,11 +135,9 @@ SELECT
     t.id AS time_id,
     t.usuario_id,
     u.nome AS usuario,
-    t.posicao,
     p.id AS pokemon_id,
     p.nome AS pokemon,
     p.tipo,
-    p.estagio,
     t.hp_atual,
     p.hp_maximo,
     p.ataque,
@@ -209,4 +213,4 @@ BEGIN
     END IF;
 END //
 
-DELIMITER;
+DELIMITER ;
