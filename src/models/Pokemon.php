@@ -55,7 +55,7 @@ class Pokemon {
     public function getHpMaximo() {
         return $this->hp_maximo;
     }
-    
+
     public function setHpMaximo($hp_maximo) {
         $this->hp_maximo = $hp_maximo;
         $this->hp_atual = $hp_maximo;
@@ -169,11 +169,11 @@ class Pokemon {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id' => $id]);
         $dados = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
         if (!$dados) {
             throw new Exception("Pokémon não encontrado");
         }
-    
+
         $this->id = $dados['id'];
         $this->nome = $dados['nome'];
         $this->tipo = $dados['tipo'];
@@ -187,15 +187,71 @@ class Pokemon {
     }
 
     // Batalha
+
+    // Retorna quanto o tipo do ataque multiplica o dano contra o tipo do defensor
+    // 2 = super efetivo, 0.5 = pouco efetivo, 1 = normal
+    public function calcularMultiplicador($tipoAtaque, $tipoDefensor) {
+        // Ataque Normal não tem vantagem nem desvantagem
+        if ($tipoAtaque == 'Normal') {
+            return 1;
+        }
+
+        // Tipo forte contra: Fogo > Planta, Agua > Fogo, Planta > Agua, Raio > Agua
+        if ($tipoAtaque == 'Fogo' && $tipoDefensor == 'Planta') {
+            return 2;
+        }
+        if ($tipoAtaque == 'Agua' && $tipoDefensor == 'Fogo') {
+            return 2;
+        }
+        if ($tipoAtaque == 'Planta' && $tipoDefensor == 'Agua') {
+            return 2;
+        }
+        if ($tipoAtaque == 'Raio' && $tipoDefensor == 'Agua') {
+            return 2;
+        }
+
+        // Tipo fraco contra: Fogo < Agua, Agua < Planta, Planta < Fogo, Raio < Planta
+        // e o mesmo tipo contra o mesmo tipo também reduz o dano
+        if ($tipoAtaque == 'Fogo' && ($tipoDefensor == 'Agua' || $tipoDefensor == 'Fogo')) {
+            return 0.5;
+        }
+        if ($tipoAtaque == 'Agua' && ($tipoDefensor == 'Planta' || $tipoDefensor == 'Agua')) {
+            return 0.5;
+        }
+        if ($tipoAtaque == 'Planta' && ($tipoDefensor == 'Fogo' || $tipoDefensor == 'Planta')) {
+            return 0.5;
+        }
+        if ($tipoAtaque == 'Raio' && ($tipoDefensor == 'Planta' || $tipoDefensor == 'Raio')) {
+            return 0.5;
+        }
+
+        return 1;
+    }
+
     public function atacar($numero, $alvo) {
         if (!isset($this->ataques[$numero])) {
             throw new Exception("Ataque inválido");
         }
-        $poder = $this->ataques[$numero]['poder'];
-        $dano = intval(($this->ataque + $poder) / 3 - $alvo->getDefesa() / 4);
+
+        $golpe = $this->ataques[$numero];
+
+        // usos = null é ilimitado; senão precisa ter usos restantes
+        if ($golpe['usos'] !== null && $golpe['usos'] <= 0) {
+            throw new Exception("Esse ataque não tem mais usos");
+        }
+
+        $multiplicador = $this->calcularMultiplicador($golpe['tipo'], $alvo->getTipo());
+
+        $dano = intval((($this->ataque + $golpe['poder']) / 3 - $alvo->getDefesa() / 4) * $multiplicador);
         if ($dano < 1) {
             $dano = 1;
         }
+
+        // Gasta um uso do ataque (se for limitado)
+        if ($golpe['usos'] !== null) {
+            $this->ataques[$numero]['usos'] = $golpe['usos'] - 1;
+        }
+
         $alvo->receberDano($dano);
         return $dano;
     }
