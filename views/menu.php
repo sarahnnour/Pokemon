@@ -19,7 +19,6 @@ if (!isset($_SESSION['usuario_id'])) {
         <a href="../index.php?pagina=time">Team Builder</a>
         <a href="../index.php?pagina=batalha">Batalha</a>
         <a href="../index.php?pagina=loja">Poké Mart</a>
-        <a href="../index.php?pagina=perfis">Trocar perfil</a>
         <a href="../src/controllers/UsuarioController.php?acao=sair">Sair</a>
     </div>
 </body>

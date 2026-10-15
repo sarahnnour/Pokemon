@@ -14,9 +14,6 @@ if (isset($_GET['pagina'])) {
 }
 
 switch ($pagina) {
-    case 'perfis':
-        header('Location: views/usuario/perfis.php');
-        break;
     case 'time':
         header('Location: views/time/montar_time.php');
         break;

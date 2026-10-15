@@ -43,17 +43,18 @@ ESTRUTURA DE PASTA MVC
     │       ├── BatalhaController.php
     │       └── LojaController.php
     ├── views/
-    │   ├── cabecalho.html
-    │   ├── menu.html
-    │   ├── rodape.html
+    │   ├── cabecalho.php
+    │   ├── menu.php
+    │   ├── rodape.php
     │   ├── usuario/
-    │   │   └── perfis.html
+    │   │   └── cadastro.php
+    │   │   └── login.php
     │   ├── time/
-    │   │   └── montar_time.html
+    │   │   └── montar_time.php
     │   ├── batalha/
-    │   │   └── batalha.html
+    │   │   └── batalha.php
     │   └── loja/
-    │       └── loja.html
+    │       └── loja.php
     ├── assets/
     |   ├── css/
     │   │   └── estilo.css
