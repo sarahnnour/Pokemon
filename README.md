@@ -44,6 +44,7 @@ ESTRUTURA DE PASTA MVC
     │       └── LojaController.php
     ├── views/
     │   ├── cabecalho.php
+    │   ├── menu.php
     │   ├── rodape.php
     │   ├── usuario/
     │   │   └── perfis.php
@@ -55,6 +56,7 @@ ESTRUTURA DE PASTA MVC
     │       └── loja.php
     ├── assets/
     |   ├── css/
+    │   │   └── estilo.css
     |   ├── img/
     |   ├── js/
     │   │   ├── Requisicao.js
