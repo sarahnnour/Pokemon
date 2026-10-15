@@ -9,19 +9,22 @@
     <div class="caixa">
         <h1>Pokémon</h1>
 
-        <p id="erro" class="erro"></p>
+        <?php
+        if (isset($_GET['erro'])) {
+            echo '<p class="erro">Nome ou senha incorretos</p>';
+        }
+        if (isset($_GET['cadastro'])) {
+            echo '<p class="sucesso">Conta criada! Faça login.</p>';
+        }
+        ?>
 
         <form action="../../src/controllers/UsuarioController.php?acao=entrar" method="post">
             <label>Nome <input type="text" name="nome" required></label>
             <label>Senha <input type="password" name="senha" required></label>
             <input type="submit" value="Entrar">
         </form>
-    </div>
 
-    <script>
-        if (window.location.search.indexOf('erro=1') != -1) {
-            document.getElementById('erro').innerHTML = 'Nome ou senha incorretos';
-        }
-    </script>
+        <a href="cadastro.php">Criar conta</a>
+    </div>
 </body>
 </html>

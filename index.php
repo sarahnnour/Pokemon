@@ -3,7 +3,7 @@ session_start();
 
 // Sem login, vai para a tela de login
 if (!isset($_SESSION['usuario_id'])) {
-    header('Location: views/usuario/login.html');
+    header('Location: views/usuario/login.php');
     exit;
 }
 

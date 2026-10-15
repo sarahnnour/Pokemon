@@ -17,6 +17,26 @@ class UsuarioController {
         $_SESSION['usuario_nome'] = $dados['nome'];
     }
 
+    public function cadastrar($nome, $email, $senha, $confirmarSenha) {
+        if ($nome == '' || $email == '' || $senha == '') {
+            throw new Exception("Preencha todos os campos");
+        }
+
+        if ($senha != $confirmarSenha) {
+            throw new Exception("As senhas não conferem");
+        }
+
+        $pdo = getConnection();
+        $usuario = new Usuario($pdo);
+
+        if ($usuario->nomeExiste($nome)) {
+            throw new Exception("Esse nome de usuário já existe");
+        }
+
+        // o dinheiro inicial (1000) vem do DEFAULT da tabela
+        $usuario->create($nome, $senha, $email);
+    }
+
     public function sair() {
         session_destroy();
     }
@@ -33,13 +53,28 @@ if ($acao == 'entrar') {
         $controller->entrar($_POST['nome'], $_POST['senha']);
         header('Location: ../../index.php');
     } catch (UsuarioNaoEncontradoException $e) {
-        header('Location: ../../views/usuario/login.html?erro=1');
+        header('Location: ../../views/usuario/login.php?erro=1');
+    }
+    exit;
+}
+
+if ($acao == 'cadastrar') {
+    try {
+        $controller->cadastrar(
+            trim($_POST['nome']),
+            trim($_POST['email']),
+            $_POST['senha'],
+            $_POST['confirmar_senha']
+        );
+        header('Location: ../../views/usuario/login.php?cadastro=1');
+    } catch (Exception $e) {
+        header('Location: ../../views/usuario/cadastro.php?erro=' . urlencode($e->getMessage()));
     }
     exit;
 }
 
 if ($acao == 'sair') {
     $controller->sair();
-    header('Location: ../../views/usuario/login.html');
+    header('Location: ../../views/usuario/login.php');
     exit;
 }

@@ -115,4 +115,11 @@ class Usuario {
         }
         return $dados;
     }
+
+        public function nomeExiste($nome) {
+        $sql = "SELECT id FROM usuario WHERE nome = :nome";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['nome' => $nome]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) != false;
+    }
 }
