@@ -9,7 +9,7 @@ ESTRUTURA DE PASTA MVC
     │   ├── models/
     │   │   ├── pokemons/
     │   │   │  ├── Evolucao1/
-    │   │   │  |   ├──Bulbassauro.php
+    │   │   │  |   ├──Bulbassauro.php 
     │   │   │  |   ├──Charmander.php
     │   │   │  |   ├──Pikachu.php
     │   │   │  |   ├──Squirtle.php
@@ -43,17 +43,17 @@ ESTRUTURA DE PASTA MVC
     │       ├── BatalhaController.php
     │       └── LojaController.php
     ├── views/
-    │   ├── cabecalho.php
-    │   ├── menu.php
-    │   ├── rodape.php
+    │   ├── cabecalho.html
+    │   ├── menu.html
+    │   ├── rodape.html
     │   ├── usuario/
-    │   │   └── perfis.php
+    │   │   └── perfis.html
     │   ├── time/
-    │   │   └── montar_time.php
+    │   │   └── montar_time.html
     │   ├── batalha/
-    │   │   └── batalha.php
+    │   │   └── batalha.html
     │   └── loja/
-    │       └── loja.php
+    │       └── loja.html
     ├── assets/
     |   ├── css/
     │   │   └── estilo.css

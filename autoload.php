@@ -1,11 +1,13 @@
 <?php
 
 spl_autoload_register(function ($classe) {
-    // Lista de diretórios onde o Autoload deve buscar
     $diretorios = [
         __DIR__ . '/src/controllers/',
         __DIR__ . '/src/excecoes/',
         __DIR__ . '/src/models/',
+        __DIR__ . '/src/models/pokemons/Evolucao1/',
+        __DIR__ . '/src/models/pokemons/Evolucao2/',
+        __DIR__ . '/src/models/pokemons/Evolucao3/',
         __DIR__ . '/src/traits/'
     ];
 
