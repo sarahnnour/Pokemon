@@ -11,7 +11,7 @@ class Squirtle extends Pokemon {
 
         $this->setAtaques([
             ['nome' => 'Investida',       'tipo' => 'Normal', 'poder' => 40, 'usos' => null],
-            ['nome' => 'Jato de Bolhas',  'tipo' => 'Agua',   'poder' => 60, 'usos' => 2],
+            ['nome' => 'Jato de Bolhas',  'tipo' => 'Agua',   'poder' => 60, 'usos' => 5],
             ['nome' => 'Jato d\'Água',    'tipo' => 'Agua',   'poder' => 90, 'usos' => 2]
         ]);
     }

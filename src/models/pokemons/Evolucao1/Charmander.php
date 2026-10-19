@@ -12,7 +12,7 @@ class Charmander extends Pokemon {
         // usos = null -> ilimitado | usos = 2 -> só pode usar 2 vezes
         $this->setAtaques([
             ['nome' => 'Arranhão',     'tipo' => 'Normal', 'poder' => 40, 'usos' => null],
-            ['nome' => 'Brasas',       'tipo' => 'Fogo',   'poder' => 60, 'usos' => 2],
+            ['nome' => 'Brasas',       'tipo' => 'Fogo',   'poder' => 60, 'usos' => 5],
             ['nome' => 'Lança-chamas', 'tipo' => 'Fogo',   'poder' => 90, 'usos' => 2]
         ]);
     }

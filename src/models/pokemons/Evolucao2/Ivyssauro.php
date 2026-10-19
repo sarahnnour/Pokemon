@@ -11,8 +11,8 @@ class Ivyssauro extends Pokemon {
 
         $this->setAtaques([
             ['nome' => 'Investida',         'tipo' => 'Normal', 'poder' => 50,  'usos' => null],
-            ['nome' => 'Chicote de Vinha',  'tipo' => 'Planta', 'poder' => 70,  'usos' => 2],
-            ['nome' => 'Folha Navalha',     'tipo' => 'Planta', 'poder' => 100, 'usos' => 2]
+            ['nome' => 'Chicote de Vinha',  'tipo' => 'Planta', 'poder' => 70,  'usos' => 7],
+            ['nome' => 'Folha Navalha',     'tipo' => 'Planta', 'poder' => 100, 'usos' => 3]
         ]);
     }
 }

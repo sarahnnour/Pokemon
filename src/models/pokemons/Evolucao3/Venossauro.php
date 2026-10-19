@@ -11,8 +11,8 @@ class Venossauro extends Pokemon {
 
         $this->setAtaques([
             ['nome' => 'Investida',         'tipo' => 'Normal', 'poder' => 60,  'usos' => null],
-            ['nome' => 'Chicote de Vinha',  'tipo' => 'Planta', 'poder' => 80,  'usos' => 2],
-            ['nome' => 'Raio Solar',        'tipo' => 'Planta', 'poder' => 110, 'usos' => 2]
+            ['nome' => 'Chicote de Vinha',  'tipo' => 'Planta', 'poder' => 80,  'usos' => 10],
+            ['nome' => 'Raio Solar',        'tipo' => 'Planta', 'poder' => 110, 'usos' => 5]
         ]);
     }
 }

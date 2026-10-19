@@ -11,8 +11,8 @@ class Blastoise extends Pokemon {
 
         $this->setAtaques([
             ['nome' => 'Investida',      'tipo' => 'Normal', 'poder' => 60,  'usos' => null],
-            ['nome' => 'Jato d\'Água',   'tipo' => 'Agua',   'poder' => 80,  'usos' => 2],
-            ['nome' => 'Hidro Bomba',    'tipo' => 'Agua',   'poder' => 110, 'usos' => 2]
+            ['nome' => 'Jato d\'Água',   'tipo' => 'Agua',   'poder' => 80,  'usos' => 10],
+            ['nome' => 'Hidro Bomba',    'tipo' => 'Agua',   'poder' => 110, 'usos' => 5]
         ]);
     }
 }
