@@ -1,6 +1,12 @@
 <?php
+
 trait Agua {
-    public function ataqueEspecial() {
-        return $this->getNome() . " usou um ataque de Água!";
+
+    public function getForteContra(): array {
+        return ['Fogo'];
+    }
+
+    public function getFracoContra(): array {
+        return ['Planta', 'Agua'];
     }
 }
