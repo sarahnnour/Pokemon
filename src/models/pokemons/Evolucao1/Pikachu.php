@@ -10,9 +10,9 @@ class Pikachu extends Pokemon {
         $this->carregar(4);
 
         $this->setAtaques([
-            ['nome' => 'Investida',          'tipo' => 'Normal', 'poder' => 40, 'usos' => null],
-            ['nome' => 'Choque do Trovão',   'tipo' => 'Raio',   'poder' => 60, 'usos' => 2],
-            ['nome' => 'Trovão',             'tipo' => 'Raio',   'poder' => 90, 'usos' => 2]
+            ['nome' => 'Investida',          'tipo' => 'Normal', 'poder' => 45, 'usos' => null],
+            ['nome' => 'Choque do Trovão',   'tipo' => 'Raio',   'poder' => 65, 'usos' => 5],
+            ['nome' => 'Trovão',             'tipo' => 'Raio',   'poder' => 95, 'usos' => 2]
         ]);
     }
 }

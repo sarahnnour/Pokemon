@@ -11,8 +11,8 @@ class Raichu extends Pokemon {
 
         $this->setAtaques([
             ['nome' => 'Investida',          'tipo' => 'Normal', 'poder' => 50,  'usos' => null],
-            ['nome' => 'Choque do Trovão',   'tipo' => 'Raio',   'poder' => 70,  'usos' => 2],
-            ['nome' => 'Trovão',             'tipo' => 'Raio',   'poder' => 100, 'usos' => 2]
+            ['nome' => 'Choque do Trovão',   'tipo' => 'Raio',   'poder' => 75,  'usos' => 7],
+            ['nome' => 'Trovão',             'tipo' => 'Raio',   'poder' => 105, 'usos' => 3]
         ]);
     }
 }

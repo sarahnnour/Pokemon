@@ -9,9 +9,9 @@ USE jogo_pokemon;
 -- Perfis dos jogadores (Usuario.php). O dinheiro é em pokédollar.
 CREATE TABLE usuario (
     id INT NOT NULL AUTO_INCREMENT,
-    nome VARCHAR(50) NOT NULL,
+    nome VARCHAR(50) UNIQUE NOT NULL,
     senha VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
     dinheiro INT NOT NULL DEFAULT 1000,
     PRIMARY KEY (id)
 );
