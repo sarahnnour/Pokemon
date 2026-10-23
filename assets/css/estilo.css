@@ -41,3 +41,6 @@ input[type="submit"],
 .erro {
     color: red;
 }
+
+.caixa-larga { width: 600px; }
+button { padding: 4px 8px; background-color: #cc0000; color: white; border: none; cursor: pointer; }
