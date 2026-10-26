@@ -12,7 +12,7 @@ class Wartortle extends Pokemon {
         $this->setAtaques([
             ['nome' => 'Investida',       'tipo' => 'Normal', 'poder' => 50,  'usos' => null],
             ['nome' => 'Jato de Bolhas',  'tipo' => 'Agua',   'poder' => 70,  'usos' => 7],
-            ['nome' => 'Jato d\'Água',    'tipo' => 'Agua',   'poder' => 100, 'usos' => 3]
+            ['nome' => 'Jato d Água',    'tipo' => 'Agua',   'poder' => 100, 'usos' => 3]
         ]);
     }
 }

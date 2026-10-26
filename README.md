@@ -29,6 +29,8 @@ ESTRUTURA DE PASTA MVC
     │   │   ├── Batalha.php
     │   │   └── Time.php
     │   ├── traits/
+    │   │   ├── Gelo.php
+    │   │   ├── Veneno.php
     │   │   ├── Fogo.php
     │   │   ├── Agua.php
     │   │   └── Planta.php
