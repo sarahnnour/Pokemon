@@ -15,6 +15,8 @@ class Pokemon {
     private $prioridade;
     private $proxima_evolucao_id;
     private $ataques = [];
+    // Normal, Envenenado, Queimado ou Congelado (mesmos nomes da coluna status_condicao)
+    private $status = 'Normal';
 
     public function __construct($pdo) {
         $this->pdo = $pdo;
@@ -117,6 +119,14 @@ class Pokemon {
         $this->ataques = $ataques;
     }
 
+    public function getStatus() {
+        return $this->status;
+    }
+
+    public function setStatus($status) {
+        $this->status = $status;
+    }
+
 
     public function create($id, $nome, $tipo, $nivel, $hp_maximo, $ataque, $defesa, $velocidade, $prioridade, $proxima_evolucao_id) {
         $sql = "INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES (:id, :nome, :tipo, :nivel, :hp_maximo, :ataque, :defesa, :velocidade, :prioridade, :proxima_evolucao_id)";
@@ -190,38 +200,17 @@ class Pokemon {
 
     // Retorna quanto o tipo do ataque multiplica o dano contra o tipo do defensor
     // 2 = super efetivo, 0.5 = pouco efetivo, 1 = normal
+    // Usa getForteContra() e getFracoContra() do trait do tipo do Pokémon que ataca
     public function calcularMultiplicador($tipoAtaque, $tipoDefensor) {
         // Ataque Normal não tem vantagem nem desvantagem
         if ($tipoAtaque == 'Normal') {
             return 1;
         }
 
-        // Tipo forte contra: Fogo > Planta, Agua > Fogo, Planta > Agua, Raio > Agua
-        if ($tipoAtaque == 'Fogo' && $tipoDefensor == 'Planta') {
+        if (in_array($tipoDefensor, $this->getForteContra())) {
             return 2;
         }
-        if ($tipoAtaque == 'Agua' && $tipoDefensor == 'Fogo') {
-            return 2;
-        }
-        if ($tipoAtaque == 'Planta' && $tipoDefensor == 'Agua') {
-            return 2;
-        }
-        if ($tipoAtaque == 'Raio' && $tipoDefensor == 'Agua') {
-            return 2;
-        }
-
-        // Tipo fraco contra: Fogo < Agua, Agua < Planta, Planta < Fogo, Raio < Planta
-        // e o mesmo tipo contra o mesmo tipo também reduz o dano
-        if ($tipoAtaque == 'Fogo' && ($tipoDefensor == 'Agua' || $tipoDefensor == 'Fogo')) {
-            return 0.5;
-        }
-        if ($tipoAtaque == 'Agua' && ($tipoDefensor == 'Planta' || $tipoDefensor == 'Agua')) {
-            return 0.5;
-        }
-        if ($tipoAtaque == 'Planta' && ($tipoDefensor == 'Fogo' || $tipoDefensor == 'Planta')) {
-            return 0.5;
-        }
-        if ($tipoAtaque == 'Raio' && ($tipoDefensor == 'Planta' || $tipoDefensor == 'Raio')) {
+        if (in_array($tipoDefensor, $this->getFracoContra())) {
             return 0.5;
         }
 
@@ -253,6 +242,12 @@ class Pokemon {
         }
 
         $alvo->receberDano($dano);
+
+        // Alguns ataques têm efeito: 'congelar', 'envenenar' ou 'queimar'
+        if (isset($golpe['efeito'])) {
+            $alvo->receberEfeito($golpe['efeito']);
+        }
+
         return $dano;
     }
 
@@ -261,6 +256,46 @@ class Pokemon {
         if ($this->hp_atual < 0) {
             $this->hp_atual = 0;
         }
+    }
+
+    // Aplica o efeito de um ataque no Pokémon
+    public function receberEfeito($efeito) {
+        // só uma condição por vez
+        if ($this->status != 'Normal') {
+            return;
+        }
+
+        if ($efeito == 'congelar') {
+            $this->status = 'Congelado';
+            // reduz a velocidade pela metade (mínimo 1)
+            $this->velocidade = intval($this->velocidade / 2);
+            if ($this->velocidade < 1) {
+                $this->velocidade = 1;
+            }
+        }
+        if ($efeito == 'envenenar') {
+            $this->status = 'Envenenado';
+        }
+        if ($efeito == 'queimar') {
+            $this->status = 'Queimado';
+        }
+    }
+
+    // A Batalha chama este método no fim de cada rodada, só para o Pokémon que está em campo.
+    // Envenenado e Queimado perdem 1/8 do HP máximo. Retorna o dano causado.
+    //Mudar depois para cada evolução do pokemon causar um dano diferente de envenenamento (também deve estar conforme o nível)
+    public function aplicarDanoDeStatus() {
+        $dano = 0;
+
+        if ($this->status == 'Envenenado' || $this->status == 'Queimado') {
+            $dano = intval($this->hp_maximo / 8);
+            if ($dano < 1) {
+                $dano = 1;
+            }
+            $this->receberDano($dano);
+        }
+
+        return $dano;
     }
 
     public function estaDesmaiado() {

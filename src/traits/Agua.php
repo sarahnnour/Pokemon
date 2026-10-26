@@ -7,6 +7,6 @@ trait Agua {
     }
 
     public function getFracoContra(): array {
-        return ['Planta', 'Agua'];
+        return ['Planta','Agua'];
     }
 }

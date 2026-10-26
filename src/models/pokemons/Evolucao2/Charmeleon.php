@@ -11,7 +11,7 @@ class Charmeleon extends Pokemon {
 
         $this->setAtaques([
             ['nome' => 'Arranhão',      'tipo' => 'Normal', 'poder' => 50,  'usos' => null],
-            ['nome' => 'Brasas',        'tipo' => 'Fogo',   'poder' => 70,  'usos' => 7],
+            ['nome' => 'Fogo Fátuo',    'tipo' => 'Fogo',   'poder' => 30,  'usos' => 5, 'efeito' => 'queimar'],
             ['nome' => 'Lança-chamas',  'tipo' => 'Fogo',   'poder' => 100, 'usos' => 3]
         ]);
     }

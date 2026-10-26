@@ -109,6 +109,23 @@ INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidad
 (3, 'Squirtle',    'Agua',   5, 44, 48, 65, 43, 0, 7),
 (4, 'Pikachu',     'Raio',   5, 35, 55, 40, 90, 0, 8);
 
+-- Novas linhas evolutivas: primeiro as evoluções (a chave estrangeira precisa existir)
+INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
+(12, 'Weezing',    'Veneno', 20, 65, 90,  120, 60, 0, NULL),
+(13, 'Beartic',    'Gelo',   20, 95, 130, 80,  50, 0, NULL),
+(14, 'Exeggutor',  'Planta', 20, 95, 95,  85,  55, 0, NULL),
+(15, 'Gyarados',   'Agua',   20, 95, 125, 79,  81, 0, NULL),
+(16, 'Arcanine',   'Fogo',   20, 90, 110, 80,  95, 0, NULL);
+
+-- Novos Pokémon iniciais (estágio 1, nível 5). Zeraora não evolui.
+INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
+(17, 'Koffing',    'Veneno', 5, 40, 65, 95, 35, 0, 12),
+(18, 'Cubchoo',    'Gelo',   5, 55, 70, 40, 40, 0, 13),
+(19, 'Zeraora',    'Raio',   5, 50, 70, 45, 95, 0, NULL),
+(20, 'Exeggcute',  'Planta', 5, 60, 40, 80, 40, 0, 14),
+(21, 'Magikarp',   'Agua',   5, 20, 10, 55, 80, 0, 15),
+(22, 'Growlithe',  'Fogo',   5, 55, 70, 45, 60, 0, 16);
+
 -- Itens obrigatórios do Poké Mart
 INSERT INTO item (nome, descricao, preco, tipo) VALUES
 -- Restauradores de HP
@@ -118,6 +135,9 @@ INSERT INTO item (nome, descricao, preco, tipo) VALUES
 ('Max Potion', 'Recupera 100% do HP', 2000, 'restaurador'),
 -- Cura de condições
 ('Antidote', 'Cura envenenamento', 100, 'cura'),
+('Burn Heal', 'Cura queimadura', 100, 'cura'),
+('Ice Heal', 'Cura congelamento', 100, 'cura'),
+('Full Heal', 'Cura todas as condições', 400, 'cura'),
 -- Reviver
 ('Revive', 'Revive um Pokémon desmaiado com metade da vida', 1500, 'reviver'),
 ('Full Revive', 'Revive um Pokémon desmaiado com toda a vida', 3000, 'reviver'),
