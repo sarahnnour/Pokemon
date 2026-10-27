@@ -30,9 +30,13 @@ class UsuarioController {
         $usuario = new Usuario($pdo);
 
         if ($usuario->nomeExiste($nome)) {
-            throw new Exception("Esse nome de usuário já existe");
+            throw new UsuarioJaExisteException("Esse nome de usuário já existe");
         }
 
+        if ($usuario->emailExiste($email)) {
+            throw new UsuarioJaExisteException("Esse e-mail já está cadastrado");
+        }
+        
         // o dinheiro inicial (1000) vem do DEFAULT da tabela
         $usuario->create($nome, $senha, $email);
     }

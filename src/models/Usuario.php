@@ -122,4 +122,11 @@ class Usuario {
         $stmt->execute(['nome' => $nome]);
         return $stmt->fetch(PDO::FETCH_ASSOC) != false;
     }
+
+    public function emailExiste($email) {
+        $sql = "SELECT id FROM usuario WHERE email = :email";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['email' => $email]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) != false;
+    }
 }

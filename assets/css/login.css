@@ -1,0 +1,104 @@
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, sans-serif;
+    background-image: url('../img/loginBackground.jfif'); /* ajuste a extensão se for outra */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.coluna {
+    width: 340px;
+    text-align: center;
+}
+
+.painel {
+    padding: 24px;
+    background-color: rgba(255, 255, 255, 0.88);
+    border: 3px solid white;
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+    margin: 0 0 10px 0;
+    font-size: 32px;
+    color: #ffcb05;
+    text-shadow: 2px 2px 0 #2a4b9b, -2px -2px 0 #2a4b9b,
+                 2px -2px 0 #2a4b9b, -2px 2px 0 #2a4b9b;
+}
+
+.boas-vindas {
+    margin: 0 0 18px 0;
+    font-size: 22px;
+    line-height: 1.2;
+}
+
+.azul { color: #2a5db0; }
+.laranja { color: #e8542f; }
+.verde { color: #3a9a2f; }
+
+.painel input[type="text"],
+.painel input[type="email"],
+.painel input[type="password"] {
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 12px 16px;
+    box-sizing: border-box;
+    font-size: 15px;
+    border: 2px solid #bbb;
+    border-radius: 999px;
+    background-color: white;
+}
+
+.botao-verde,
+.botao-azul {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    box-sizing: border-box;
+    font-size: 17px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: white;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.botao-verde {
+    background: linear-gradient(#5fd04a, #2f9a2a);
+    border: 3px solid #1f6e1b;
+}
+
+.botao-azul {
+    background: linear-gradient(#4aa8f0, #1f6fd0);
+    border: 3px solid #14509a;
+}
+
+.fora-do-painel {
+    margin-top: 14px;
+}
+
+.link-entrar {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: white;
+    text-shadow: 1px 1px 3px black;
+}
+
+.erro {
+    color: #cc0000;
+    font-weight: bold;
+}
+
+.sucesso {
+    color: #2f9a2a;
+    font-weight: bold;
+}

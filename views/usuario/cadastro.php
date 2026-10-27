@@ -3,27 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>Criar conta - Pokémon</title>
-    <link rel="stylesheet" href="../../assets/css/estilo.css">
+    <link rel="stylesheet" href="../../assets/css/login.css">
 </head>
 <body>
-    <div class="caixa">
-        <h1>Criar conta</h1>
+    <div class="coluna">
+        <div class="painel">
+            <h1 class="logo">Pokémon Adventure</h1>
+            <h2 class="boas-vindas">
+                <span class="azul">CRIE SUA</span><br>
+                <span class="laranja">CONTA</span> <span class="verde">DE TREINADOR!</span>
+            </h2>
 
-        <?php
-        if (isset($_GET['erro'])) {
-            echo '<p class="erro">' . htmlspecialchars($_GET['erro']) . '</p>';
-        }
-        ?>
+            <?php
+            if (isset($_GET['erro'])) {
+                echo '<p class="erro">' . htmlspecialchars($_GET['erro']) . '</p>';
+            }
+            ?>
 
-        <form action="../../src/controllers/UsuarioController.php?acao=cadastrar" method="post">
-            <label>Nome de usuário <input type="text" name="nome" maxlength="50" required></label>
-            <label>E-mail <input type="email" name="email" maxlength="100" required></label>
-            <label>Senha <input type="password" name="senha" maxlength="50" required></label>
-            <label>Confirmar senha <input type="password" name="confirmar_senha" maxlength="50" required></label>
-            <input type="submit" value="Criar conta">
-        </form>
+            <form action="../../src/controllers/UsuarioController.php?acao=cadastrar" method="post">
+                <input type="text" name="nome" placeholder="Nome do Treinador" maxlength="50" required>
+                <input type="email" name="email" placeholder="E-mail" maxlength="100" required>
+                <input type="password" name="senha" placeholder="Senha" maxlength="50" required>
+                <input type="password" name="confirmar_senha" placeholder="Confirmar senha" maxlength="50" required>
+                <input type="submit" value="Criar nova conta" class="botao-azul">
+            </form>
+        </div>
 
-        <a href="login.php">Voltar ao login</a>
+        <a href="login.php" class="link-entrar">Já tem uma conta? Toque para Entrar</a>
     </div>
 </body>
 </html>
