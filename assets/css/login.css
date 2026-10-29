@@ -5,7 +5,7 @@ body {
     align-items: center;
     justify-content: center;
     font-family: Arial, sans-serif;
-    background-image: url('../img/loginBackground.jfif'); /* ajuste a extensão se for outra */
+    background-image: url('../img/loginBackground.jpg'); /* ajuste a extensão se for outra */
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
