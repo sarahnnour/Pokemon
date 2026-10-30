@@ -5,7 +5,7 @@ body {
     align-items: center;
     justify-content: center;
     font-family: Arial, sans-serif;
-    background-image: url('../img/loginBackground.jpg'); /* ajuste a extensão se for outra */
+    background-image: url('../img/loginBackground.jpg'); 
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -30,6 +30,13 @@ body {
     color: #ffcb05;
     text-shadow: 2px 2px 0 #2a4b9b, -2px -2px 0 #2a4b9b,
                  2px -2px 0 #2a4b9b, -2px 2px 0 #2a4b9b;
+}
+
+.logo-imagem {
+    display: block;
+    width: 220px;
+    max-width: 100%;
+    margin: 0 auto 10px auto;
 }
 
 .boas-vindas {
