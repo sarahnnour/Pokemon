@@ -8,7 +8,7 @@
 <body>
     <div class="coluna">
         <div class="painel">
-            <h1 class="logo">Pokémon Adventure</h1>
+        <img src="../../assets/img/logo_pokemon.png" alt="Pokémon" class="logo-imagem">
             <h2 class="boas-vindas">
                 <span class="azul">CRIE SUA</span><br>
                 <span class="laranja">CONTA</span> <span class="verde">DE TREINADOR!</span>
