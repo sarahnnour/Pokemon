@@ -10,25 +10,35 @@ if (!isset($_SESSION['usuario_id'])) {
 <head>
     <meta charset="UTF-8">
     <title>Poké Mart - Pokémon</title>
-    <link rel="stylesheet" href="../../assets/css/estilo.css">
-<link rel="stylesheet" href="../../assets/css/loja.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap">
+    <link rel="stylesheet" href="../../assets/css/menu.css">
+    <link rel="stylesheet" href="../../assets/css/loja.css">
 </head>
 <body>
+    <div class="tela">
 
-    <div class="caixa caixa-larga">
-        <h1>Poké Mart</h1>
+        <img class="canto pikachu" src="../../assets/img/pikachu-head.png" alt="Pikachu">
+        <img class="canto charmander" src="../../assets/img/charmander-head.png" alt="Charmander">
+        <img class="canto bulbassauro" src="../../assets/img/bulbassauro-head.png" alt="Bulbassauro">
+        <img class="canto squirtle" src="../../assets/img/squirtle-head.png" alt="Squirtle">
 
-        <p class="saldo">Pokédollar: <span id="dinheiro"></span></p>
-        <p id="mensagem"></p>
+        <h1 class="titulo-loja">Poké Mart</h1>
+        <p class="saldo">Pokédollar Atual: <span id="dinheiro"></span> ¥</p>
 
-        <label>Usar em:
-            <select id="pokemon"></select>
-        </label>
+        <hr class="linha">
 
-        <h2>Itens</h2>
-        <div id="itens"></div>
+        <div class="area-loja">
+            <label class="usar-em">Usar em:
+                <select id="pokemon"></select>
+            </label>
+            <p id="mensagem"></p>
+            <div id="itens"></div>
+        </div>
 
-        <a href="../menu.php">Voltar</a>
+        <a class="sair" href="../menu.php">
+            <img src="../../assets/img/icone-sair.png" alt="">
+            Sair
+        </a>
     </div>
 
     <script src="../../assets/js/Requisicao.js"></script>

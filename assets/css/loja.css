@@ -1,49 +1,139 @@
+/* Usa o .tela, .canto, .linha e .sair do menu.css */
+
+.titulo-loja {
+    position: absolute;
+    left: 50.4%;
+    top: 15.5%;
+    transform: translateX(-50%);
+    margin: 0;
+    font-size: 3.8em;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #1d3358;
+}
+
 .saldo {
-    font-weight: bold;
-    font-size: 18px;
+    position: absolute;
+    left: 50.4%;
+    top: 23.3%;
+    transform: translateX(-50%);
+    margin: 0;
+    font-size: 2em;
+    white-space: nowrap;
+    color: #1d3358;
 }
 
-.sucesso {
-    color: #2f9a2a;
-    font-weight: bold;
+/* área onde ficam o select, a mensagem e os itens */
+.area-loja {
+    position: absolute;
+    left: 26.8%;
+    top: 31%;
+    width: 47.4%;
+    height: 52%;
+    display: flex;
+    flex-direction: column;
 }
 
-#pokemon {
-    width: 100%;
-    padding: 6px;
-    margin-top: 5px;
+.usar-em {
+    font-size: 1.9em;
+    color: #1d3358;
+    text-align: center;
 }
 
-/* itens em 2 colunas */
+.usar-em select {
+    width: 55%;
+    margin-left: 0.5em;
+    padding: 0.2em 0.5em;
+    font-family: inherit;
+    font-size: 0.8em;
+    color: #1d3358;
+    background-color: #f3f7fb;
+    border: 0.1em solid #8ea3bd;
+    border-radius: 0.8em;
+}
+
+#mensagem {
+    margin: 0.3em 0;
+    min-height: 1.6em;
+    font-size: 1.6em;
+    text-align: center;
+}
+
+.erro { color: #b00020; }
+.sucesso { color: #1f7a1f; }
+
+/* itens em 3 colunas com rolagem */
 #itens {
+    flex: 1;
+    overflow-y: auto;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 10px;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-auto-rows: min-content;
+    gap: 1em;
+    padding-right: 0.8em;
+}
+
+#itens::-webkit-scrollbar { width: 0.8em; }
+#itens::-webkit-scrollbar-thumb {
+    background: #2a5db0;
+    border-radius: 0.4em;
 }
 
 .item {
-    padding: 10px;
-    border: 1px solid #ccc;
-    background-color: #fafafa;
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    padding: 0.8em;
+    box-sizing: border-box;
+    background: linear-gradient(#f3f7fb, #cfd9e6);
+    border: 0.15em solid #8ea3bd;
+    border-radius: 0.8em;
+    color: #1d3358;
 }
 
 .item-imagem {
-    width: 48px;
-    height: 48px;
+    width: 4.5em;
+    height: 4.5em;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.item-texto {
+    flex: 1;
 }
 
 .item h3 {
-    margin: 5px 0;
-    font-size: 16px;
+    margin: 0;
+    font-size: 1.9em;
+    line-height: 1.1;
 }
 
 .item p {
-    margin: 4px 0;
-    font-size: 13px;
+    margin: 0.2em 0;
+    font-size: 1.4em;
+    line-height: 1.1;
+    font-weight: normal;
 }
 
 .item .preco {
     font-weight: bold;
-    color: #cc0000;
+}
+
+.item button {
+    width: 100%;
+    margin-top: 0.3em;
+    padding: 0.3em;
+    font-family: inherit;
+    font-size: 1.6em;
+    text-transform: uppercase;
+    color: white;
+    cursor: pointer;
+    background: linear-gradient(#c0262f, #8e131c);
+    border: 0.1em solid #5c0a10;
+    border-radius: 0.4em;
+}
+
+.item button:hover {
+    filter: brightness(1.2);
 }
