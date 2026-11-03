@@ -11,12 +11,14 @@ if (!isset($_SESSION['usuario_id'])) {
     <meta charset="UTF-8">
     <title>Poké Mart - Pokémon</title>
     <link rel="stylesheet" href="../../assets/css/estilo.css">
+<link rel="stylesheet" href="../../assets/css/loja.css">
 </head>
 <body>
+
     <div class="caixa caixa-larga">
         <h1>Poké Mart</h1>
 
-        <p>Pokédollar: <span id="dinheiro"></span></p>
+        <p class="saldo">Pokédollar: <span id="dinheiro"></span></p>
         <p id="mensagem"></p>
 
         <label>Usar em:

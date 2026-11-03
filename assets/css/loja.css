@@ -1,0 +1,49 @@
+.saldo {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.sucesso {
+    color: #2f9a2a;
+    font-weight: bold;
+}
+
+#pokemon {
+    width: 100%;
+    padding: 6px;
+    margin-top: 5px;
+}
+
+/* itens em 2 colunas */
+#itens {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.item {
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #fafafa;
+}
+
+.item-imagem {
+    width: 48px;
+    height: 48px;
+}
+
+.item h3 {
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+.item p {
+    margin: 4px 0;
+    font-size: 13px;
+}
+
+.item .preco {
+    font-weight: bold;
+    color: #cc0000;
+}
