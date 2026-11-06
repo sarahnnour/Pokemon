@@ -1,0 +1,114 @@
+/* Usa o .tela, .canto, .linha e .sair do menu.css */
+
+.titulo-time {
+    position: absolute;
+    left: 50.4%;
+    top: 19.3%;
+    transform: translateX(-50%);
+    margin: 0;
+    font-size: 3.8em;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #1d3358;
+}
+
+/* área com rolagem onde ficam a mensagem, o time e os disponíveis */
+.area-time {
+    position: absolute;
+    left: 26.8%;
+    top: 31%;
+    width: 47.4%;
+    height: 52%;
+    overflow-y: auto;
+    padding-right: 0.8em;
+    box-sizing: border-box;
+    color: #1d3358;
+}
+
+.area-time::-webkit-scrollbar { width: 0.8em; }
+.area-time::-webkit-scrollbar-thumb {
+    background: #2a5db0;
+    border-radius: 0.4em;
+}
+
+.area-time h2 {
+    margin: 0.4em 0 0.3em 0;
+    font-size: 1.9em;
+    text-align: center;
+}
+
+#mensagem {
+    margin: 0;
+    min-height: 1.6em;
+    font-size: 1.6em;
+    text-align: center;
+    color: #b00020;
+}
+
+/* grades de cards */
+.grade {
+    display: grid;
+    gap: 0.8em;
+}
+
+.grade-time        { grid-template-columns: 1fr 1fr 1fr; }
+.grade-disponiveis { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+.vazio {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: 1.4em;
+    text-align: center;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2em;
+    padding: 0.5em;
+    box-sizing: border-box;
+    text-align: center;
+    background: linear-gradient(#f3f7fb, #cfd9e6);
+    border: 0.15em solid #8ea3bd;
+    border-radius: 0.8em;
+}
+
+.card-imagem {
+    width: 6em;
+    height: 6em;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.card h3 {
+    margin: 0;
+    font-size: 1.4em;
+    line-height: 1.1;
+}
+
+.card p {
+    margin: 0.1em 0;
+    font-size: 1em;
+    line-height: 1.1;
+    font-weight: normal;
+}
+
+.card button {
+    width: 100%;
+    margin-top: 0.2em;
+    padding: 0.2em;
+    font-family: inherit;
+    font-size: 1.1em;
+    text-transform: uppercase;
+    color: white;
+    cursor: pointer;
+    background: linear-gradient(#c0262f, #8e131c);
+    border: 0.1em solid #5c0a10;
+    border-radius: 0.4em;
+}
+
+.card button:hover {
+    filter: brightness(1.2);
+}

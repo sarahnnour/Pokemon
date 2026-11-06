@@ -9,15 +9,12 @@ class Loja {
     carregar() {
         this.requisicao.get(this.url + '?acao=listar').then(dados => {
             document.getElementById('dinheiro').innerHTML = dados.dinheiro;
-            this.desenharTime(dados.time);
             this.desenharItens(dados.itens);
         });
     }
 
     comprar(itemId) {
-        const pokemonId = document.getElementById('pokemon').value;
-
-        this.requisicao.post(this.url + '?acao=comprar', { item_id: itemId, pokemon_id: pokemonId }).then(dados => {
+        this.requisicao.post(this.url + '?acao=comprar', { item_id: itemId }).then(dados => {
             this.mostrarMensagem(dados);
             this.carregar();
         });
@@ -30,22 +27,10 @@ class Loja {
             mensagem.innerHTML = dados.erro;
         } else {
             mensagem.className = 'sucesso';
-            mensagem.innerHTML = 'Compra realizada!';
+            mensagem.innerHTML = 'Item guardado na bolsa!';
         }
     }
 
-    desenharTime(lista) {
-        const select = document.getElementById('pokemon');
-        const escolhido = select.value;
-
-        let html = '';
-        for (let i = 0; i < lista.length; i++) {
-            const p = lista[i];
-            html += `<option value="${p.pokemon_id}">${p.pokemon} - HP ${p.hp_atual}/${p.hp_maximo} - ${p.status_condicao}</option>`;
-        }
-        select.innerHTML = html;
-        select.value = escolhido;
-    }
 
     desenharItens(lista) {
         let html = '';

@@ -26,20 +26,42 @@ class Item {
         return $dados;
     }
 
-    // Transação: se qualquer passo falhar, nada é cobrado nem aplicado
-    public function comprar($usuarioId, $itemId, $pokemonId) {
-        $this->pdo->beginTransaction();
-
-        try {
-            $item = $this->carregar($itemId);
-            $this->cobrar($usuarioId, $item['preco']);
-            $this->aplicar($item, $usuarioId, $pokemonId);
-            $this->pdo->commit();
-        } catch (Exception $e) {
-            $this->pdo->rollBack();
-            throw $e;
+        // Transação: se qualquer passo falhar, nada é cobrado nem guardado
+        public function comprar($usuarioId, $itemId) {
+            $this->pdo->beginTransaction();
+    
+            try {
+                $item = $this->carregar($itemId);
+                $this->cobrar($usuarioId, $item['preco']);
+    
+                $bolsa = new Bolsa($this->pdo);
+                $bolsa->adicionar($usuarioId, $itemId);
+    
+                $this->pdo->commit();
+            } catch (Exception $e) {
+                $this->pdo->rollBack();
+                throw $e;
+            }
         }
-    }
+    
+        // Transação: se o item não puder ser usado, a unidade volta para a bolsa
+        public function usar($usuarioId, $itemId, $pokemonId) {
+            $this->pdo->beginTransaction();
+    
+            try {
+                $item = $this->carregar($itemId);
+    
+                $bolsa = new Bolsa($this->pdo);
+                $bolsa->remover($usuarioId, $itemId);
+    
+                $this->aplicar($item, $usuarioId, $pokemonId);
+    
+                $this->pdo->commit();
+            } catch (Exception $e) {
+                $this->pdo->rollBack();
+                throw $e;
+            }
+        }
 
     private function cobrar($usuarioId, $preco) {
         $sql = "SELECT dinheiro FROM usuario WHERE id = :id";

@@ -9,22 +9,20 @@ class LojaController {
     public function listar($usuarioId) {
         $pdo = getConnection();
         $item = new Item($pdo);
-        $time = new Time($pdo);
         $usuario = new Usuario($pdo);
         $usuario->carregar($usuarioId);
 
         return [
             'dinheiro' => $usuario->getDinheiro(),
-            'itens' => $item->listar(),
-            'time' => $time->listarDoUsuario($usuarioId)
+            'itens' => $item->listar()
         ];
     }
 
     // lança SaldoInsuficienteException se faltar dinheiro
-    public function comprar($usuarioId, $itemId, $pokemonId) {
+    public function comprar($usuarioId, $itemId) {
         $pdo = getConnection();
         $item = new Item($pdo);
-        $item->comprar($usuarioId, $itemId, $pokemonId);
+        $item->comprar($usuarioId, $itemId);
     }
 }
 
@@ -52,7 +50,7 @@ try {
     }
 
     if ($acao == 'comprar') {
-        $controller->comprar($usuarioId, $dados['item_id'], $dados['pokemon_id']);
+        $controller->comprar($usuarioId, $dados['item_id']);
         echo json_encode(['ok' => true]);
     }
 } catch (Exception $e) {

@@ -51,13 +51,12 @@ if (!isset($_SESSION['usuario_id'])) {
                 </span>
             </a>
 
-            <!-- Bolsa não funcional (por enquanto) -->
-            <div class="botao">
+            <a class="botao" href="../index.php?pagina=bolsa">
                 <span class="botao-interno">
                     <img class="icone" src="../assets/img/icone-bolsa.png" alt="">
                     <span class="botao-texto botao-bolsa">Bolsa</span>
                 </span>
-            </div>
+            </a>
         </div>
 
         <a class="sair" href="../src/controllers/UsuarioController.php?acao=sair">

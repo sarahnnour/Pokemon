@@ -23,6 +23,9 @@ switch ($pagina) {
     case 'loja':
         header('Location: views/loja/loja.php');
         break;
+    case 'bolsa':
+        header('Location: views/bolsa/bolsa.php');
+        break;
     default:
         header('Location: views/menu.php');
 }

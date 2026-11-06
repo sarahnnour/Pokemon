@@ -28,9 +28,6 @@ if (!isset($_SESSION['usuario_id'])) {
         <hr class="linha">
 
         <div class="area-loja">
-            <label class="usar-em">Usar em:
-                <select id="pokemon"></select>
-            </label>
             <p id="mensagem"></p>
             <div id="itens"></div>
         </div>

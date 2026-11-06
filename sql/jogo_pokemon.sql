@@ -43,6 +43,21 @@ CREATE TABLE item (
     PRIMARY KEY (id)
 );
 
+-- Itens que cada usuário comprou e ainda não usou (Bolsa)
+CREATE TABLE bolsa (
+    id INT NOT NULL AUTO_INCREMENT,
+    usuario_id INT NOT NULL,
+    item_id INT NOT NULL,
+    quantidade INT NOT NULL DEFAULT 0,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_bolsa_usuario
+        FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_bolsa_item
+        FOREIGN KEY (item_id) REFERENCES item(id),
+    UNIQUE KEY uk_bolsa_usuario_item (usuario_id, item_id)
+);
+
 -- Time de cada usuário (Time.php / Team Builder)
 -- Guarda o estado do Pokémon para aquele jogador (HP atual e condição)
 CREATE TABLE time (

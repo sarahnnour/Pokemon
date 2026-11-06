@@ -3,7 +3,6 @@ Projeto Pokemon Sarah Nour, Pedro Rezende
 ESTRUTURA DE PASTA MVC
     pokemon/
     ├── index.php
-    ├── configuracao.php
     |-- autoload.php
     ├── src/
     │   ├── models/
@@ -13,11 +12,22 @@ ESTRUTURA DE PASTA MVC
     │   │   │  |   ├──Charmander.php
     │   │   │  |   ├──Pikachu.php
     │   │   │  |   ├──Squirtle.php
+    │   │   │  |   ├──Cubchoo.php
+    │   │   │  |   ├──Exeggcute.php
+    │   │   │  |   ├──Growlithe.php
+    │   │   │  |   ├──Koffing.php
+    │   │   │  |   ├──Magikarp.php
+    │   │   │  |   ├──Zeraora.php
     │   │   │  ├── Evolucao2/
     │   │   │  |   ├──Charmeleon.php
     │   │   │  |   ├──Ivyssauro.php
     │   │   │  |   ├──Raichu.php
     │   │   │  |   ├──Wartortle.php
+    │   │   │  |   ├──Arcanine.php
+    │   │   │  |   ├──Beartic.php
+    │   │   │  |   ├──Exeggcutor.php
+    │   │   │  |   ├──Gyarados.php
+    │   │   │  |   ├──Weezing.php
     │   │   │  ├── Evolucao3/
     │   │   │  |   ├──Blastoise.php
     │   │   │  |   ├──Charizard.php
@@ -26,6 +36,7 @@ ESTRUTURA DE PASTA MVC
     │   │   ├── Usuario.php
     │   │   ├── Pokemon.php
     │   │   ├── Item.php
+    │   │   ├── Bolsa.php
     │   │   ├── Batalha.php
     │   │   └── Time.php
     │   ├── traits/
@@ -38,11 +49,13 @@ ESTRUTURA DE PASTA MVC
     │   ├── excecoes/
     │   │   └── SaldoInsuficienteException.php
     │   │   └── TimeCheioException.php
+    │   │   └── UsuarioJaExisteException.php
     │   │   └── UsuarioNaoEncontradoException.php
     │   └── controllers/
     │       ├── UsuarioController.php
     │       ├── TimeController.php
     │       ├── BatalhaController.php
+    │       ├── BolsaController.php
     │       └── LojaController.php
     ├── views/
     │   ├── cabecalho.php
@@ -53,6 +66,8 @@ ESTRUTURA DE PASTA MVC
     │   │   └── login.php
     │   ├── time/
     │   │   └── montar_time.php
+    │   ├── bolsa/
+    │   │   └── bolsa.php
     │   ├── batalha/
     │   │   └── batalha.php
     │   └── loja/
@@ -60,10 +75,15 @@ ESTRUTURA DE PASTA MVC
     ├── assets/
     |   ├── css/
     │   │   └── estilo.css
+    │   │   └── login.css
+    │   │   └── loja.css
+    │   │   └── menu.css
+    │   │   └── time.css
     |   ├── img/
     |   ├── js/
     │   │   ├── Requisicao.js
     │   │   ├── Batalha.js
+    │   │   ├── Bolsa.js
     │   │   ├── Loja.js
     │   │   └── MontarTime.js
     └── sql/
