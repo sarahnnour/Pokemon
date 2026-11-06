@@ -1,4 +1,4 @@
-   body {
+body {
     margin: 0;
     height: 100vh;
     display: flex;
@@ -9,10 +9,10 @@
     font-family: 'Oswald', Impact, 'Arial Narrow', sans-serif;
 }
 
-
 .tela {
-    --u: min(1vw, 2.1033vh);
+    --u: max(1vw, 2.1033vh);
     position: relative;
+    flex-shrink: 0;
     width: calc(var(--u) * 100);
     height: calc(var(--u) * 47.54);
     font-size: var(--u);
