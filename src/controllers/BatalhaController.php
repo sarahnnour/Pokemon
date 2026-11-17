@@ -42,7 +42,26 @@ class BatalhaController {
 
         return $batalha->getEstado();
     }
-}
+
+    public function trocar($pokemonId) {
+        if (!isset($_SESSION['batalha'])) {
+            throw new Exception("Nenhuma batalha em andamento");
+        }
+
+        $pdo = getConnection();
+        $batalha = new Batalha($pdo);
+        $batalha->restaurar($_SESSION['batalha']);
+        $batalha->trocar($pokemonId);
+
+        if ($batalha->terminou()) {
+            unset($_SESSION['batalha']);
+        } else {
+            $_SESSION['batalha'] = $batalha->paraArray();
+        }
+
+        return $batalha->getEstado();
+    }
+} 
 
 // Todas as respostas são JSON
 header('Content-Type: application/json');
@@ -74,6 +93,9 @@ try {
     if ($acao == 'atacar') {
         echo json_encode($controller->atacar(intval($dados['ataque'])));
     }
+    if ($acao == 'trocar') {
+        echo json_encode($controller->trocar($dados['pokemon_id']));
+ }
 } catch (Exception $e) {
     echo json_encode(['erro' => $e->getMessage()]);
 }

@@ -7,6 +7,7 @@ class Batalha {
     private $pdo;
     private $usuarioId;
     private $jogador;
+    private $ataqueInimigo = '';
     private $inimigo;
     private $terminou = false;
     private $resultado = '';
@@ -60,12 +61,16 @@ class Batalha {
     }
 
     // Uma rodada: o jogador escolhe o ataque, o adversário sorteia o dele
-    public function rodada($numero) {
+        public function rodada($numero) {
         if ($this->terminou) {
             throw new Exception("A batalha já terminou");
         }
+        if ($this->jogador->estaDesmaiado()) {
+            throw new Exception("Troque de Pokémon");
+        }
 
         $this->mensagens = [];
+        $this->ataqueInimigo = '';
         $this->validarAtaque($numero);
         $numeroInimigo = $this->escolherAtaqueInimigo();
 
@@ -88,6 +93,20 @@ class Batalha {
         if ($this->inimigo->estaDesmaiado()) {
             $this->terminar('vitoria');
         } elseif ($this->jogador->estaDesmaiado()) {
+            $this->verificarDesmaio();
+        }
+    }
+
+    // Pokémon do jogador desmaiou: se ainda houver outro vivo no time, a batalha continua
+    // e o jogador escolhe quem entra. Se não houver, é derrota.
+    private function verificarDesmaio() {
+        $this->salvarPokemon();
+
+        $sql = "SELECT COUNT(*) FROM time WHERE usuario_id = :usuario_id AND hp_atual > 0";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['usuario_id' => $this->usuarioId]);
+
+        if ($stmt->fetchColumn() == 0) {
             $this->terminar('derrota');
         }
     }
@@ -138,6 +157,9 @@ class Batalha {
         if ($alvo->estaDesmaiado()) {
             $this->mensagens[] = $alvo->getNome() . ' desmaiou!';
         }
+        if ($atacante === $this->inimigo) {
+            $this->ataqueInimigo = $golpe['nome'];
+        }
     }
 
     // Fim da rodada: Envenenado e Queimado perdem HP
@@ -169,21 +191,26 @@ class Batalha {
         $this->salvar();
     }
 
+        private function salvarPokemon() {
+        $sql = "UPDATE time SET hp_atual = :hp, status_condicao = :status
+                WHERE usuario_id = :usuario_id AND pokemon_id = :pokemon_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'hp' => $this->jogador->getHpAtual(),
+            'status' => $this->jogador->getStatus(),
+            'usuario_id' => $this->usuarioId,
+            'pokemon_id' => $this->jogador->getId()
+        ]);
+    }
+
     // Transação: salva o HP/condição do Pokémon e registra o log.
     // O dinheiro da vitória é somado pelo trigger_dinheiro_vitoria (não somar aqui!)
     private function salvar() {
         $this->pdo->beginTransaction();
 
         try {
-            $sql = "UPDATE time SET hp_atual = :hp, status_condicao = :status
-                    WHERE usuario_id = :usuario_id AND pokemon_id = :pokemon_id";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([
-                'hp' => $this->jogador->getHpAtual(),
-                'status' => $this->jogador->getStatus(),
-                'usuario_id' => $this->usuarioId,
-                'pokemon_id' => $this->jogador->getId()
-            ]);
+
+            $this->salvarPokemon();
 
             $sql = "INSERT INTO log_batalha (usuario_id, pokemon_id, adversario, resultado, dinheiro_ganho)
                     VALUES (:usuario_id, :pokemon_id, :adversario, :resultado, :dinheiro_ganho)";
@@ -203,6 +230,53 @@ class Batalha {
         }
     }
 
+       // Troca o Pokémon em campo.
+    // Troca normal: gasta o turno e o adversário ataca.
+    // Troca depois de desmaiar: não gasta turno.
+    public function trocar($pokemonId) {
+        if ($this->terminou) {
+            throw new Exception("A batalha já terminou");
+        }
+        if ($pokemonId == $this->jogador->getId()) {
+            throw new Exception("Esse Pokémon já está em campo");
+        }
+
+        $sql = "SELECT * FROM view_time_usuario WHERE usuario_id = :usuario_id AND pokemon_id = :pokemon_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['usuario_id' => $this->usuarioId, 'pokemon_id' => $pokemonId]);
+        $linha = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$linha) {
+            throw new Exception("Escolha um Pokémon do seu time");
+        }
+        if ($linha['hp_atual'] == 0) {
+            throw new Exception("Pokémon desmaiado");
+        }
+
+        $this->mensagens = [];
+        $this->ataqueInimigo = '';
+        $estavaDesmaiado = $this->jogador->estaDesmaiado();
+
+        // guarda o HP e a condição do Pokémon que está saindo
+        $this->salvarPokemon();
+
+        $this->jogador = $this->criarPokemon($linha['pokemon']);
+        $this->jogador->setHpAtual($linha['hp_atual']);
+        $this->jogador->setStatus($linha['status_condicao']);
+        $this->mensagens[] = 'Você trocou para ' . $this->jogador->getNome() . '!';
+
+        if (!$estavaDesmaiado) {
+            // o adversário ataca
+            $this->turno($this->inimigo, $this->jogador, $this->escolherAtaqueInimigo());
+
+            $this->aplicarStatus($this->jogador);
+            $this->aplicarStatus($this->inimigo);
+
+            if ($this->jogador->estaDesmaiado()) {
+                $this->verificarDesmaio();
+            }
+        }
+    }
     // Guardar / recuperar a batalha na sessão entre uma requisição e outra
     public function paraArray() {
         return [
@@ -245,7 +319,9 @@ class Batalha {
             'mensagens' => $this->mensagens,
             'terminou' => $this->terminou,
             'resultado' => $this->resultado,
-            'dinheiro_ganho' => $this->dinheiroGanho
+            'dinheiro_ganho' => $this->dinheiroGanho,
+            'ataque_inimigo' => $this->ataqueInimigo,
+            'precisa_trocar' => !$this->terminou && $this->jogador->estaDesmaiado()
         ];
     }
 

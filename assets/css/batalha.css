@@ -1,0 +1,290 @@
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1b2a1f;
+    overflow: hidden;
+    font-family: 'Oswald', Impact, 'Arial Narrow', sans-serif;
+}
+
+/* a tela tem a proporção da imagem (2:1) e tudo usa "em" para escalar junto */
+.tela-batalha {
+    --u: min(1vw, 2vh);
+    position: relative;
+    flex-shrink: 0;
+    width: calc(var(--u) * 100);
+    height: calc(var(--u) * 50);
+    font-size: var(--u);
+    background-image: url('../img/batalhaBackground.jpg');
+    background-size: 100% 100%;
+    image-rendering: pixelated;
+    overflow: hidden;
+}
+
+/* ---------- Topo: só as barras de HP (sem fundo) ---------- */
+.barra-topo {
+    position: absolute;
+    top: 1.5em;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 0 2em;
+    box-sizing: border-box;
+}
+
+.info {
+    width: 35%;
+    color: white;
+    text-shadow: 0.1em 0.1em 0.2em black;
+}
+
+.info .nome {
+    margin: 0 0 0.1em 0;
+    font-size: 1.8em;
+    text-transform: uppercase;
+}
+
+.info .nome span {
+    font-size: 0.7em;
+    color: #d6e4f5;
+}
+
+.hp-fundo {
+    height: 1.4em;
+    overflow: hidden;
+    background-color: #333;
+    border: 0.18em solid white;
+    border-radius: 0.7em;
+    box-shadow: 0 0.1em 0.4em rgba(0, 0, 0, 0.6);
+}
+
+.hp-barra {
+    height: 100%;
+    background: linear-gradient(#7be35f, #2f9a2a);
+    transition: width 0.4s;
+}
+
+.hp-texto {
+    margin: 0.1em 0 0 0;
+    font-size: 1.2em;
+}
+
+.voltar {
+    padding: 0.3em 0.9em;
+    font-size: 1.4em;
+    text-decoration: none;
+    color: white;
+    background-color: rgba(142, 19, 28, 0.9);
+    border: 0.1em solid #5c0a10;
+    border-radius: 0.4em;
+}
+
+/* ---------- Mensagem de erro ---------- */
+#mensagem {
+    position: absolute;
+    top: 14%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 0.3em 1em;
+    font-size: 1.6em;
+    color: white;
+    background-color: rgba(176, 0, 32, 0.9);
+    border-radius: 0.4em;
+}
+
+#mensagem:empty {
+    display: none;
+}
+
+/* ---------- Pokémon no campo ---------- */
+.pokemon {
+    position: absolute;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.jogador {
+    left: 12%;
+    bottom: 25%;
+    width: 26em;
+    height: 26em;
+}
+
+.inimigo {
+    right: 14%;
+    top: 14%;
+    width: 22em;
+    height: 22em;
+}
+
+/* efeito de ataque: o Pokémon avança e volta */
+.ataca-jogador {
+    animation: ataca-jogador 0.5s;
+}
+
+.ataca-inimigo {
+    animation: ataca-inimigo 0.5s;
+}
+
+@keyframes ataca-jogador {
+    0%   { transform: translate(0, 0); }
+    40%  { transform: translate(6em, -3em); }
+    100% { transform: translate(0, 0); }
+}
+
+@keyframes ataca-inimigo {
+    0%   { transform: translate(0, 0); }
+    40%  { transform: translate(-6em, 3em); }
+    100% { transform: translate(0, 0); }
+}
+
+/* ---------- Aviso do ataque (aparece e some sozinho) ---------- */
+.aviso {
+    position: absolute;
+    left: 50%;
+    top: 22%;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.aviso span {
+    display: block;
+    padding: 0.3em 1.2em;
+    font-size: 2em;
+    white-space: nowrap;
+    color: white;
+    background-color: rgba(20, 30, 50, 0.85);
+    border: 0.12em solid white;
+    border-radius: 0.6em;
+    opacity: 0;
+    animation: aviso 1s;
+}
+
+@keyframes aviso {
+    0%   { opacity: 0; transform: translateY(1em); }
+    15%  { opacity: 1; transform: translateY(0); }
+    75%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ---------- Resultado e botão iniciar ---------- */
+#resultado {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    transform: translateX(-50%);
+    margin: 0;
+    font-size: 3em;
+    white-space: nowrap;
+    color: white;
+    text-shadow: 0.08em 0.08em 0.2em black;
+}
+
+#resultado:empty {
+    display: none;
+}
+
+.botao-iniciar {
+    position: absolute;
+    left: 50%;
+    top: 48%;
+    transform: translate(-50%, -50%);
+    padding: 0.4em 1.2em;
+    font-family: inherit;
+    font-size: 3em;
+    text-transform: uppercase;
+    color: white;
+    cursor: pointer;
+    background: linear-gradient(#c0262f, #8e131c);
+    border: 0.1em solid #5c0a10;
+    border-radius: 0.4em;
+}
+
+/* ---------- Parte de baixo: estilo menu de jogo ---------- */
+.painel-baixo {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 25%;
+    display: flex;
+    gap: 1.5em;
+    padding: 1em 1.5em;
+    box-sizing: border-box;
+    background: linear-gradient(#2a3f66, #15233d);
+    border-top: 0.3em solid #e8edf2;
+    box-shadow: inset 0 0.2em 0 #6f8fc0;
+}
+
+#ataques,
+#trocas {
+    display: grid;
+    grid-template-rows: 1fr;
+    gap: 0.6em;
+    padding: 0.6em;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 0.15em solid #6f8fc0;
+    border-radius: 0.8em;
+}
+
+#ataques {
+    flex: 2;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+#trocas {
+    flex: 1;
+    grid-template-columns: 1fr 1fr;
+}
+
+/* todos os botões têm a mesma cor */
+.painel-baixo button {
+    font-family: inherit;
+    color: white;
+    cursor: pointer;
+    background: linear-gradient(#4aa8f0, #1f6fd0);
+    text-shadow: 0.06em 0.06em 0.1em rgba(0, 0, 0, 0.7);
+    border: 0.15em solid rgba(255, 255, 255, 0.8);
+    border-radius: 0.7em;
+    box-shadow: 0 0.2em 0 rgba(0, 0, 0, 0.5);
+    transition: transform 0.1s, filter 0.1s;
+}
+
+.painel-baixo button:hover {
+    transform: translateY(-0.15em);
+    filter: brightness(1.15);
+}
+
+.painel-baixo button:disabled {
+    filter: grayscale(1) brightness(0.6);
+    cursor: default;
+    transform: none;
+}
+
+.ataque b {
+    display: block;
+    font-size: 1.7em;
+    line-height: 1.1;
+}
+
+.ataque span {
+    display: block;
+    font-size: 1.1em;
+}
+
+/* botão de troca: só a imagem do Pokémon */
+.troca {
+    padding: 0;
+}
+
+.troca img {
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+}

@@ -10,31 +10,36 @@ if (!isset($_SESSION['usuario_id'])) {
 <head>
     <meta charset="UTF-8">
     <title>Batalha - Pokémon</title>
-    <link rel="stylesheet" href="../../assets/css/estilo.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap">
+    <link rel="stylesheet" href="../../assets/css/batalha.css">
 </head>
 <body>
-    <div class="caixa caixa-larga">
-        <h1>Batalha</h1>
+    <div class="tela-batalha">
 
-        <p id="mensagem" class="erro"></p>
+        <div class="barra-topo">
+            <div id="info-jogador" class="info"></div>
+            <a class="voltar" href="../menu.php">Fugir</a>
+            <div id="info-inimigo" class="info"></div>
+        </div>
 
-        <label>Escolha seu Pokémon:
-            <select id="pokemon"></select>
-        </label>
-        <button onclick="batalha.iniciar()">Iniciar batalha</button>
+        <p id="mensagem"></p>
 
         <div id="campo"></div>
-        <div id="relatorio"></div>
-        <div id="ataques"></div>
+        <div id="aviso" class="aviso"></div>
+        <p id="resultado"></p>
 
-        <a href="../menu.php">Voltar</a>
+        <button id="inicio" class="botao-iniciar" onclick="batalha.iniciar()">Iniciar batalha</button>
+
+        <div class="painel-baixo">
+            <div id="ataques"></div>
+            <div id="trocas"></div>
+        </div>
     </div>
 
     <script src="../../assets/js/Requisicao.js"></script>
     <script src="../../assets/js/Batalha.js"></script>
     <script>
         const batalha = new Batalha(new Requisicao());
-        batalha.carregar();
     </script>
 </body>
 </html>
