@@ -11,8 +11,8 @@ class TimeController {
         $time = new Time($pdo);
 
         return [
-            'disponiveis' => $time->listarDisponiveis(),
-            'time' => $time->listarDoUsuario($usuarioId)
+            'disponiveis' => $time->listarDisponiveis($usuarioId),
+            'time' => $time->listarDoUsuario($usuarioId),
         ];
     }
 

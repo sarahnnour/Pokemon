@@ -190,7 +190,7 @@ class Batalha {
     // Pokémon do jogador desmaiou: se ainda houver outro vivo no time, a batalha continua
     // e o jogador escolhe quem entra. Se não houver, é derrota.
     private function verificarDesmaio() {
-        $sql = "SELECT COUNT(*) FROM time WHERE usuario_id = :usuario_id AND hp_atual > 0";
+        $sql = "SELECT COUNT(*) FROM time WHERE usuario_id = :usuario_id AND hp_atual > 0 AND no_time = 1";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['usuario_id' => $this->usuarioId]);
 

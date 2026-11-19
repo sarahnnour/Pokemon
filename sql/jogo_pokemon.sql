@@ -66,6 +66,7 @@ CREATE TABLE time (
     pokemon_id INT NOT NULL,
     hp_atual INT NOT NULL,
     status_condicao VARCHAR(20) NOT NULL DEFAULT 'Normal',
+    no_time TINYINT(1) NOT NULL DEFAULT 1, -- 1 = está no time, 0 = guardado
     PRIMARY KEY (id),
     CONSTRAINT fk_time_usuario
         FOREIGN KEY (usuario_id) REFERENCES usuario(id)
@@ -73,7 +74,6 @@ CREATE TABLE time (
     CONSTRAINT fk_time_pokemon
         FOREIGN KEY (pokemon_id) REFERENCES pokemon(id)
 );
-
 -- DDL de alteração: o mesmo Pokémon não pode aparecer duas vezes no time do usuário
 ALTER TABLE time ADD UNIQUE KEY uk_time_usuario_pokemon (usuario_id, pokemon_id);
 
@@ -106,58 +106,58 @@ INSERT INTO usuario (nome, senha, email) VALUES
 
 -- Estágio 3 (Evolucao3)
 INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
-(9,  'Venossauro', 'Planta', 30, 80, 82, 83, 80, 0, NULL),
-(10, 'Charizard',  'Fogo',   30, 78, 84, 78, 100, 0, NULL),
-(11, 'Blastoise',  'Agua',   30, 79, 83, 100, 78, 0, NULL);
+(9,  'Venossauro', 'Planta', 30, 190, 90, 90,  80,  0, NULL),
+(10, 'Charizard',  'Fogo',   30, 180, 92, 85,  100, 0, NULL),
+(11, 'Blastoise',  'Agua',   30, 185, 88, 100, 78,  0, NULL);
 
 -- Estágio 2 (Evolucao2)
 INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
-(5, 'Ivyssauro',  'Planta', 15, 60, 62, 63, 60, 0, 9),
-(6, 'Charmeleon', 'Fogo',   15, 58, 64, 58, 80, 0, 10),
-(7, 'Wartortle',  'Agua',   15, 59, 63, 80, 58, 0, 11),
-(8, 'Raichu',     'Raio',   20, 60, 90, 55, 110, 0, NULL);
+(5, 'Ivyssauro',  'Planta', 15, 140, 65, 65, 60,  0, 9),
+(6, 'Charmeleon', 'Fogo',   15, 130, 68, 60, 80,  0, 10),
+(7, 'Wartortle',  'Agua',   15, 135, 65, 80, 58,  0, 11),
+(8, 'Raichu',     'Raio',   20, 125, 75, 55, 105, 0, NULL);
+
+INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
+(12, 'Weezing',   'Veneno', 20, 135, 70, 85, 55, 0, NULL),
+(13, 'Beartic',   'Gelo',   20, 150, 78, 65, 50, 0, NULL),
+(14, 'Exeggutor', 'Planta', 20, 155, 72, 75, 50, 0, NULL),
+(15, 'Gyarados',  'Agua',   20, 150, 80, 70, 75, 0, NULL),
+(16, 'Arcanine',  'Fogo',   20, 150, 78, 70, 85, 0, NULL);
 
 -- Estágio 1 (Evolucao1)
 INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
-(1, 'Bulbassauro', 'Planta', 5, 45, 49, 49, 45, 0, 5),
-(2, 'Charmander',  'Fogo',   5, 39, 52, 43, 65, 0, 6),
-(3, 'Squirtle',    'Agua',   5, 44, 48, 65, 43, 0, 7),
-(4, 'Pikachu',     'Raio',   5, 35, 55, 40, 90, 0, 8);
+(1, 'Bulbassauro', 'Planta', 5, 105, 50, 50, 45, 0, 5),
+(2, 'Charmander',  'Fogo',   5, 95,  52, 45, 65, 0, 6),
+(3, 'Squirtle',    'Agua',   5, 100, 48, 60, 45, 0, 7),
+(4, 'Pikachu',     'Raio',   5, 85,  55, 40, 90, 0, 8);
 
--- Novas linhas evolutivas: primeiro as evoluções (a chave estrangeira precisa existir)
 INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
-(12, 'Weezing',    'Veneno', 20, 65, 90,  120, 60, 0, NULL),
-(13, 'Beartic',    'Gelo',   20, 95, 130, 80,  50, 0, NULL),
-(14, 'Exeggutor',  'Planta', 20, 95, 95,  85,  55, 0, NULL),
-(15, 'Gyarados',   'Agua',   20, 95, 125, 79,  81, 0, NULL),
-(16, 'Arcanine',   'Fogo',   20, 90, 110, 80,  95, 0, NULL);
-
--- Novos Pokémon iniciais (estágio 1, nível 5). Zeraora não evolui.
-INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES
-(17, 'Koffing',    'Veneno', 5, 40, 65, 95, 35, 0, 12),
-(18, 'Cubchoo',    'Gelo',   5, 55, 70, 40, 40, 0, 13),
-(19, 'Zeraora',    'Raio',   5, 50, 70, 45, 95, 0, NULL),
-(20, 'Exeggcute',  'Planta', 5, 60, 40, 80, 40, 0, 14),
-(21, 'Magikarp',   'Agua',   5, 20, 10, 55, 80, 0, 15),
-(22, 'Growlithe',  'Fogo',   5, 55, 70, 45, 60, 0, 16);
-
+(17, 'Koffing',   'Veneno', 5, 95,  55, 65, 40, 0, 12),
+(18, 'Cubchoo',   'Gelo',   5, 100, 52, 45, 40, 0, 13),
+(19, 'Zeraora',   'Raio',   5, 125, 65, 55, 95, 0, NULL),
+(20, 'Exeggcute', 'Planta', 5, 110, 45, 70, 35, 0, 14),
+(21, 'Magikarp',  'Agua',   5, 80,  30, 45, 60, 0, 15),
+(22, 'Growlithe', 'Fogo',   5, 100, 55, 45, 60, 0, 16);
 -- Itens obrigatórios do Poké Mart
 INSERT INTO item (nome, descricao, preco, tipo) VALUES
 -- Restauradores de HP
-('Potion', 'Recupera 20 HP', 200, 'restaurador'),
-('Super Potion', 'Recupera 50 HP', 400, 'restaurador'),
-('Hyper Potion', 'Recupera 100 HP', 700, 'restaurador'),
-('Max Potion', 'Recupera 100% do HP', 800, 'restaurador'),
+('Potion',        'Recupera 20 HP',                                50,  'restaurador'),
+('Super Potion',  'Recupera 50 HP',                                100, 'restaurador'),
+('Hyper Potion',  'Recupera 200 HP',                               300, 'restaurador'),
+('Max Potion',    'Recupera 100% do HP',                           400, 'restaurador'),
+('Full Restore',  'Recupera 100% do HP e cura todas as condições', 600, 'restaurador'),
 -- Cura de condições
-('Antidote', 'Cura envenenamento', 100, 'cura'),
-('Burn Heal', 'Cura queimadura', 100, 'cura'),
-('Ice Heal', 'Cura congelamento', 100, 'cura'),
-('Full Heal', 'Cura todas as condições', 200, 'cura'),
+('Antidote',      'Cura envenenamento',          50,  'cura'),
+('Burn Heal',     'Cura queimadura',             50,  'cura'),
+('Ice Heal',      'Cura congelamento',           50,  'cura'),
+('Awakening',     'Cura sono',                   50,  'cura'),
+('Paralyze Heal', 'Cura paralisia',              50,  'cura'),
+('Full Heal',     'Cura todas as condições',     150, 'cura'),
 -- Reviver
-('Revive', 'Revive um Pokémon desmaiado com metade da vida', 700, 'reviver'),
-('Full Revive', 'Revive um Pokémon desmaiado com toda a vida', 1000, 'reviver'),
+('Revive',        'Revive um Pokémon desmaiado com metade da vida', 400, 'reviver'),
+('Full Revive',   'Revive um Pokémon desmaiado com toda a vida',    700, 'reviver'),
 -- Evolução
-('Pedra de Evolução', 'Evolui um Pokémon para o próximo estágio', 1200, 'evolucao');
+('Pedra de Evolução', 'Evolui um Pokémon para o próximo estágio',   1200, 'evolucao');
 
 
 -- ==============================================================================
@@ -183,7 +183,8 @@ SELECT
     p.proxima_evolucao_id
 FROM time t
 INNER JOIN usuario u ON u.id = t.usuario_id
-INNER JOIN pokemon p ON p.id = t.pokemon_id;
+INNER JOIN pokemon p ON p.id = t.pokemon_id
+WHERE t.no_time = 1;
 
 -- View 2: histórico de batalhas
 CREATE VIEW view_historico_batalhas AS
