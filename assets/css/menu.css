@@ -182,64 +182,25 @@ div.botao {
     height: 1.8em;
     width: auto;
 }
-/* Usa o .tela, .canto, .linha e .sair do menu.css */
-
-.titulo-historico {
+/* ---------- Botão Histórico (canto inferior esquerdo) ---------- */
+.historico {
     position: absolute;
-    left: 50.4%;
-    top: 19.3%;
-    transform: translateX(-50%);
-    margin: 0;
-    font-size: 3.8em;
-    line-height: 1;
-    text-transform: uppercase;
-    white-space: nowrap;
-    color: #1d3358;
-}
-
-/* área com rolagem onde fica a tabela */
-.area-historico {
-    position: absolute;
-    left: 26.8%;
-    top: 31%;
-    width: 47.4%;
-    height: 52%;
-    overflow-y: auto;
-    padding-right: 0.8em;
+    left: 0;
+    top: 91%;
+    width: 11%;
+    height: 9%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     box-sizing: border-box;
-    color: #1d3358;
-}
-
-.area-historico::-webkit-scrollbar { width: 0.8em; }
-.area-historico::-webkit-scrollbar-thumb {
-    background: #2a5db0;
-    border-radius: 0.4em;
-}
-
-.area-historico table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 1.3em;
-    text-align: center;
-}
-
-.area-historico th {
-    padding: 0.3em;
-    color: white;
-    background-color: #2a5db0;
-}
-
-.area-historico td {
-    padding: 0.3em;
-    background: linear-gradient(#f3f7fb, #cfd9e6);
-    border-bottom: 0.1em solid #8ea3bd;
-}
-
-.vitoria { color: #1f7a1f; }
-.derrota { color: #b00020; }
-
-.vazio {
-    margin: 0;
+    text-decoration: none;
+    color: #e8edf2;
     font-size: 1.6em;
-    text-align: center;
+    font-weight: 700;
+    background-color: rgba(75, 75, 80, 0.92);
+    border-top-right-radius: 1.2em;
+}
+
+.historico:hover {
+    background-color: rgba(100, 100, 106, 0.95);
 }

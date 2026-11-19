@@ -61,7 +61,6 @@ class BatalhaController {
 
         return $batalha->getEstado();
     }
-} 
 
     public function historico($usuarioId) {
         $pdo = getConnection();
@@ -69,6 +68,7 @@ class BatalhaController {
 
         return ['historico' => $batalha->listarHistorico($usuarioId)];
     }
+}
 
 // Todas as respostas são JSON
 header('Content-Type: application/json');
