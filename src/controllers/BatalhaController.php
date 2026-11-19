@@ -6,11 +6,23 @@ require_once __DIR__ . '/../models/Conexao.php';
 
 class BatalhaController {
 
+    // time do usuário + itens da bolsa que podem ser usados em batalha (sem a Pedra de Evolução)
     public function listar($usuarioId) {
         $pdo = getConnection();
         $time = new Time($pdo);
+        $bolsa = new Bolsa($pdo);
 
-        return ['time' => $time->listarDoUsuario($usuarioId)];
+        $itens = [];
+        foreach ($bolsa->listar($usuarioId) as $item) {
+            if ($item['tipo'] != 'evolucao') {
+                $itens[] = $item;
+            }
+        }
+
+        return [
+            'time' => $time->listarDoUsuario($usuarioId),
+            'itens' => $itens
+        ];
     }
 
     public function iniciar($usuarioId, $pokemonId) {
@@ -62,11 +74,23 @@ class BatalhaController {
         return $batalha->getEstado();
     }
 
-    public function historico($usuarioId) {
+    public function usarItem($itemId, $pokemonId) {
+        if (!isset($_SESSION['batalha'])) {
+            throw new Exception("Nenhuma batalha em andamento");
+        }
+
         $pdo = getConnection();
         $batalha = new Batalha($pdo);
+        $batalha->restaurar($_SESSION['batalha']);
+        $batalha->usarItem($itemId, $pokemonId);
 
-        return ['historico' => $batalha->listarHistorico($usuarioId)];
+        if ($batalha->terminou()) {
+            unset($_SESSION['batalha']);
+        } else {
+            $_SESSION['batalha'] = $batalha->paraArray();
+        }
+
+        return $batalha->getEstado();
     }
 }
 
@@ -100,11 +124,13 @@ try {
     if ($acao == 'atacar') {
         echo json_encode($controller->atacar(intval($dados['ataque'])));
     }
+
     if ($acao == 'trocar') {
         echo json_encode($controller->trocar($dados['pokemon_id']));
- }
-     if ($acao == 'historico') {
-        echo json_encode($controller->historico($usuarioId));
+    }
+
+    if ($acao == 'item') {
+        echo json_encode($controller->usarItem($dados['item_id'], $dados['pokemon_id']));
     }
 } catch (Exception $e) {
     echo json_encode(['erro' => $e->getMessage()]);

@@ -1,14 +1,16 @@
 <?php
 
-// Batalha 1x1: o Pokémon do jogador contra um adversário sorteado do mesmo nível.
-// A Batalha TEM dois Pokémon (composição).
+// Batalha: o Pokémon do jogador contra uma fila de adversários (1 a 3 Pokémon).
+// A dificuldade (quantidade e evolução dos adversários) depende das vitórias do usuário.
+// A Batalha TEM Pokémon (composição).
 class Batalha {
 
     private $pdo;
     private $usuarioId;
     private $jogador;
-    private $ataqueInimigo = '';
     private $inimigo;
+    private $fila = [];      // nomes dos próximos adversários (ainda não lutaram)
+    private $acoes = [];     // ataques feitos na rodada, na ordem em que aconteceram
     private $terminou = false;
     private $resultado = '';
     private $dinheiroGanho = 0;
@@ -31,12 +33,19 @@ class Batalha {
         return new $nome($this->pdo);
     }
 
-    // Começa a batalha com um Pokémon do time do usuário (usa a view_time_usuario)
-    public function iniciar($usuarioId, $pokemonId) {
+    // Busca um Pokémon do time do usuário (usa a view_time_usuario)
+    private function buscarNoTime($pokemonId) {
         $sql = "SELECT * FROM view_time_usuario WHERE usuario_id = :usuario_id AND pokemon_id = :pokemon_id";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['usuario_id' => $usuarioId, 'pokemon_id' => $pokemonId]);
-        $linha = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->execute(['usuario_id' => $this->usuarioId, 'pokemon_id' => $pokemonId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Começa a batalha com um Pokémon do time do usuário
+    public function iniciar($usuarioId, $pokemonId) {
+        $this->usuarioId = $usuarioId;
+
+        $linha = $this->buscarNoTime($pokemonId);
 
         if (!$linha) {
             throw new Exception("Escolha um Pokémon do seu time");
@@ -45,23 +54,83 @@ class Batalha {
             throw new Exception("Pokémon desmaiado. Use um Revive na loja");
         }
 
-        $this->usuarioId = $usuarioId;
-
         $this->jogador = $this->criarPokemon($linha['pokemon']);
         $this->jogador->setHpAtual($linha['hp_atual']);
         $this->jogador->setStatus($linha['status_condicao']);
 
-        // adversário: sorteia um Pokémon do mesmo nível
-        $sql = "SELECT nome FROM pokemon WHERE nivel = :nivel ORDER BY RAND() LIMIT 1";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['nivel' => $this->jogador->getNivel()]);
-        $this->inimigo = $this->criarPokemon($stmt->fetchColumn());
+        $this->montarAdversarios();
 
         $this->mensagens[] = $this->jogador->getNome() . ' enfrenta ' . $this->inimigo->getNome() . '!';
     }
 
+    // Dificuldade = vitórias / 5 (máximo 8). Número = estágio de evolução de cada adversário:
+    // 0: [1]    1: [1,1]    2: [1,1,1]
+    // 3: [2,1,1]    4: [2,2,1]    5: [2,2,2]
+    // 6: [3,2,2]    7: [3,3,2]    8: [3,3,3]
+    private function montarAdversarios() {
+        // vitórias do usuário (usa a view_vitorias_usuario; sem vitórias não tem linha)
+        $sql = "SELECT vitorias FROM view_vitorias_usuario WHERE usuario_id = :usuario_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['usuario_id' => $this->usuarioId]);
+        $vitorias = intval($stmt->fetchColumn());
+
+        $nivel = intval($vitorias / 5);
+        if ($nivel > 8) {
+            $nivel = 8;
+        }
+
+        // quantidade de adversários: 1, 2 ou 3
+        $quantidade = $nivel + 1;
+        if ($quantidade > 3) {
+            $quantidade = 3;
+        }
+
+        // todos começam no estágio 1
+        $estagios = [];
+        for ($i = 0; $i < $quantidade; $i++) {
+            $estagios[] = 1;
+        }
+
+        // a partir do nível 3, um estágio é somado por vez (1º, 2º, 3º, 1º, 2º, 3º)
+        $evolucoes = $nivel - 2;
+        for ($i = 0; $i < $evolucoes; $i++) {
+            $estagios[$i % 3] = $estagios[$i % 3] + 1;
+        }
+
+        $nomes = [];
+        for ($i = 0; $i < count($estagios); $i++) {
+            $nomes[] = $this->sortearAdversario($estagios[$i]);
+        }
+
+        $this->inimigo = $this->criarPokemon(array_shift($nomes));
+        $this->fila = $nomes;
+
+        // quanto maior a dificuldade, maior o prêmio (200 até 1000)
+        $this->recompensa = 200 + $nivel * 100;
+    }
+
+    // Sorteia um Pokémon inicial (nível 5) e evolui até o estágio pedido.
+    // Se ele não tiver tantas evoluções, fica na última que existe.
+    private function sortearAdversario($estagio) {
+        $sql = "SELECT nome, proxima_evolucao_id FROM pokemon WHERE nivel = 5 ORDER BY RAND() LIMIT 1";
+        $stmt = $this->pdo->query($sql);
+        $p = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        for ($i = 1; $i < $estagio; $i++) {
+            if ($p['proxima_evolucao_id'] == null) {
+                break;
+            }
+            $sql = "SELECT nome, proxima_evolucao_id FROM pokemon WHERE id = :id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['id' => $p['proxima_evolucao_id']]);
+            $p = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        return $p['nome'];
+    }
+
     // Uma rodada: o jogador escolhe o ataque, o adversário sorteia o dele
-        public function rodada($numero) {
+    public function rodada($numero) {
         if ($this->terminou) {
             throw new Exception("A batalha já terminou");
         }
@@ -70,11 +139,12 @@ class Batalha {
         }
 
         $this->mensagens = [];
-        $this->ataqueInimigo = '';
+        $this->acoes = [];
         $this->validarAtaque($numero);
         $numeroInimigo = $this->escolherAtaqueInimigo();
 
-        // quem tem maior prioridade ataca primeiro; empate: maior velocidade
+        // quem tem maior prioridade ataca primeiro; empate: maior velocidade.
+        // Quem foi derrotado antes de atacar não ataca.
         if ($this->jogadorPrimeiro()) {
             $this->turno($this->jogador, $this->inimigo, $numero);
             if (!$this->inimigo->estaDesmaiado()) {
@@ -87,21 +157,39 @@ class Batalha {
             }
         }
 
+        $this->fimDeRodada();
+    }
+
+    // Fim da rodada (ataque, troca ou item): status, salvar o HP e ver quem desmaiou
+    private function fimDeRodada() {
         $this->aplicarStatus($this->jogador);
         $this->aplicarStatus($this->inimigo);
 
+        // o HP do jogador fica sempre salvo no banco (os itens usam o banco)
+        $this->salvarPokemon();
+
         if ($this->inimigo->estaDesmaiado()) {
-            $this->terminar('vitoria');
-        } elseif ($this->jogador->estaDesmaiado()) {
+            $this->proximoAdversario();
+        }
+        if (!$this->terminou && $this->jogador->estaDesmaiado()) {
             $this->verificarDesmaio();
         }
+    }
+
+    // O adversário desmaiou: entra o próximo da fila. Se não tem mais, é vitória.
+    private function proximoAdversario() {
+        if (count($this->fila) == 0) {
+            $this->terminar('vitoria');
+            return;
+        }
+
+        $this->inimigo = $this->criarPokemon(array_shift($this->fila));
+        $this->mensagens[] = 'Entrou o adversário ' . $this->inimigo->getNome() . '!';
     }
 
     // Pokémon do jogador desmaiou: se ainda houver outro vivo no time, a batalha continua
     // e o jogador escolhe quem entra. Se não houver, é derrota.
     private function verificarDesmaio() {
-        $this->salvarPokemon();
-
         $sql = "SELECT COUNT(*) FROM time WHERE usuario_id = :usuario_id AND hp_atual > 0";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['usuario_id' => $this->usuarioId]);
@@ -151,14 +239,18 @@ class Batalha {
         $dano = $atacante->atacar($numero, $alvo);
         $this->mensagens[] = $atacante->getNome() . ' usou ' . $golpe['nome'] . ' e causou ' . $dano . ' de dano.';
 
+        // o JavaScript usa esta lista para mostrar quem atacou, na ordem certa
+        $quem = 'jogador';
+        if ($atacante === $this->inimigo) {
+            $quem = 'inimigo';
+        }
+        $this->acoes[] = ['quem' => $quem, 'pokemon' => $atacante->getNome(), 'golpe' => $golpe['nome']];
+
         if (isset($golpe['efeito'])) {
             $this->mensagens[] = 'Condição de ' . $alvo->getNome() . ': ' . $alvo->getStatus() . '.';
         }
         if ($alvo->estaDesmaiado()) {
             $this->mensagens[] = $alvo->getNome() . ' desmaiou!';
-        }
-        if ($atacante === $this->inimigo) {
-            $this->ataqueInimigo = $golpe['nome'];
         }
     }
 
@@ -191,7 +283,7 @@ class Batalha {
         $this->salvar();
     }
 
-        private function salvarPokemon() {
+    private function salvarPokemon() {
         $sql = "UPDATE time SET hp_atual = :hp, status_condicao = :status
                 WHERE usuario_id = :usuario_id AND pokemon_id = :pokemon_id";
         $stmt = $this->pdo->prepare($sql);
@@ -230,7 +322,7 @@ class Batalha {
         }
     }
 
-       // Troca o Pokémon em campo.
+    // Troca o Pokémon em campo.
     // Troca normal: gasta o turno e o adversário ataca.
     // Troca depois de desmaiar: não gasta turno.
     public function trocar($pokemonId) {
@@ -241,10 +333,7 @@ class Batalha {
             throw new Exception("Esse Pokémon já está em campo");
         }
 
-        $sql = "SELECT * FROM view_time_usuario WHERE usuario_id = :usuario_id AND pokemon_id = :pokemon_id";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['usuario_id' => $this->usuarioId, 'pokemon_id' => $pokemonId]);
-        $linha = $stmt->fetch(PDO::FETCH_ASSOC);
+        $linha = $this->buscarNoTime($pokemonId);
 
         if (!$linha) {
             throw new Exception("Escolha um Pokémon do seu time");
@@ -254,7 +343,7 @@ class Batalha {
         }
 
         $this->mensagens = [];
-        $this->ataqueInimigo = '';
+        $this->acoes = [];
         $estavaDesmaiado = $this->jogador->estaDesmaiado();
 
         // guarda o HP e a condição do Pokémon que está saindo
@@ -266,34 +355,63 @@ class Batalha {
         $this->mensagens[] = 'Você trocou para ' . $this->jogador->getNome() . '!';
 
         if (!$estavaDesmaiado) {
-            // o adversário ataca
-            $this->turno($this->inimigo, $this->jogador, $this->escolherAtaqueInimigo());
-
-            $this->aplicarStatus($this->jogador);
-            $this->aplicarStatus($this->inimigo);
-
-            if ($this->jogador->estaDesmaiado()) {
-                $this->verificarDesmaio();
-            }
+            $this->turnoDoInimigo();
         }
     }
 
-        // Histórico de batalhas do usuário (usa a view_historico_batalhas)
-    public function listarHistorico($usuarioId) {
-        $sql = "SELECT * FROM view_historico_batalhas
-                WHERE usuario_id = :usuario_id
-                ORDER BY data_batalha DESC";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['usuario_id' => $usuarioId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // Usa um item da bolsa em um Pokémon do time. Só itens de batalha (HP, cura e reviver).
+    // Gasta o turno (o adversário ataca), a não ser que o Pokémon em campo esteja desmaiado.
+    public function usarItem($itemId, $pokemonId) {
+        if ($this->terminou) {
+            throw new Exception("A batalha já terminou");
+        }
+
+        $item = new Item($this->pdo);
+        $dados = $item->carregar($itemId);
+
+        if ($dados['tipo'] == 'evolucao') {
+            throw new Exception("Esse item não pode ser usado em batalha");
+        }
+
+        $this->mensagens = [];
+        $this->acoes = [];
+        $estavaDesmaiado = $this->jogador->estaDesmaiado();
+
+        // o Item mexe no banco (o HP do jogador já está salvo lá). Se falhar, a unidade volta para a bolsa.
+        $item->usar($this->usuarioId, $itemId, $pokemonId);
+        $this->mensagens[] = 'Você usou ' . $dados['nome'] . '!';
+
+        // se o item foi no Pokémon em campo, atualiza o HP e a condição dele
+        if ($pokemonId == $this->jogador->getId()) {
+            $linha = $this->buscarNoTime($pokemonId);
+            $this->jogador->setHpAtual($linha['hp_atual']);
+            $this->jogador->setStatus($linha['status_condicao']);
+
+            // curou o congelamento: a velocidade volta ao normal
+            if ($linha['status_condicao'] == 'Normal') {
+                $this->jogador->setVelocidade($linha['velocidade']);
+            }
+        }
+
+        if (!$estavaDesmaiado) {
+            $this->turnoDoInimigo();
+        }
     }
-    
+
+    // O adversário ataca (usado quando o jogador gasta o turno com troca ou item)
+    private function turnoDoInimigo() {
+        $this->turno($this->inimigo, $this->jogador, $this->escolherAtaqueInimigo());
+        $this->fimDeRodada();
+    }
+
     // Guardar / recuperar a batalha na sessão entre uma requisição e outra
     public function paraArray() {
         return [
             'usuario_id' => $this->usuarioId,
             'jogador' => $this->pokemonParaArray($this->jogador),
-            'inimigo' => $this->pokemonParaArray($this->inimigo)
+            'inimigo' => $this->pokemonParaArray($this->inimigo),
+            'fila' => $this->fila,
+            'recompensa' => $this->recompensa
         ];
     }
 
@@ -301,6 +419,8 @@ class Batalha {
         $this->usuarioId = $dados['usuario_id'];
         $this->jogador = $this->pokemonDeArray($dados['jogador']);
         $this->inimigo = $this->pokemonDeArray($dados['inimigo']);
+        $this->fila = $dados['fila'];
+        $this->recompensa = $dados['recompensa'];
     }
 
     private function pokemonParaArray($p) {
@@ -327,11 +447,12 @@ class Batalha {
         return [
             'jogador' => $this->resumo($this->jogador),
             'inimigo' => $this->resumo($this->inimigo),
+            'inimigos_restantes' => count($this->fila),
             'mensagens' => $this->mensagens,
             'terminou' => $this->terminou,
             'resultado' => $this->resultado,
             'dinheiro_ganho' => $this->dinheiroGanho,
-            'ataque_inimigo' => $this->ataqueInimigo,
+            'acoes' => $this->acoes,
             'precisa_trocar' => !$this->terminou && $this->jogador->estaDesmaiado()
         ];
     }

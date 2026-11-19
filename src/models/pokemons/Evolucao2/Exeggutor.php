@@ -1,6 +1,6 @@
 <?php
 
-class Exeggcutor extends Pokemon {
+class Exeggutor extends Pokemon {
 
     use Planta;
 

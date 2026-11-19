@@ -4,16 +4,17 @@ class Batalha {
         this.requisicao = requisicao;
         this.url = '../../src/controllers/BatalhaController.php';
         this.time = [];      // time do usuário (vem do banco)
+        this.itens = [];     // itens da bolsa que podem ser usados em batalha
         this.imagens = {};   // imagens já buscadas na PokeAPI
         this.jogador = '';   // nome do Pokémon do jogador em campo
         this.inimigo = '';   // nome do Pokémon adversário
         this.ataques = [];   // ataques do Pokémon em campo
-        this.golpe = null;   // golpe que o jogador acabou de usar (para o efeito)
     }
 
     carregar() {
         return this.requisicao.get(this.url + '?acao=listar').then(dados => {
             this.time = dados.time;
+            this.itens = dados.itens;
         });
     }
 
@@ -44,9 +45,6 @@ class Batalha {
     }
 
     atacar(numero) {
-        // guarda o golpe para mostrar o aviso e o efeito quando a resposta chegar
-        this.golpe = { quem: this.jogador, nome: this.ataques[numero].nome };
-
         this.requisicao.post(this.url + '?acao=atacar', { ataque: numero }).then(dados => {
             this.tratarResposta(dados);
         }).catch(erro => {
@@ -62,22 +60,41 @@ class Batalha {
         });
     }
 
+    usarItem(itemId) {
+        const pokemonId = document.getElementById('pokemon-item').value;
+
+        this.requisicao.post(this.url + '?acao=item', { item_id: itemId, pokemon_id: pokemonId }).then(dados => {
+            if (!dados.erro) {
+                this.fecharBolsa();
+            }
+            this.tratarResposta(dados);
+        }).catch(erro => {
+            this.mostrarErro(erro);
+        });
+    }
+
+    alternarBolsa() {
+        document.getElementById('painel-bolsa').classList.toggle('aberto');
+    }
+
+    fecharBolsa() {
+        document.getElementById('painel-bolsa').classList.remove('aberto');
+    }
+
     mostrarErro(erro) {
         console.log(erro);
-        this.golpe = null;
         document.getElementById('mensagem').innerHTML = 'Erro na comunicação com o servidor (veja o Console)';
     }
 
     tratarResposta(dados) {
         if (dados.erro) {
-            this.golpe = null;
             document.getElementById('mensagem').innerHTML = dados.erro;
             return;
         }
 
         document.getElementById('mensagem').innerHTML = '';
 
-        // atualiza o time (o HP é salvo no banco) e depois desenha a batalha
+        // atualiza o time e a bolsa (o HP é salvo no banco) e depois desenha a batalha
         this.carregar().then(() => {
             this.desenharBatalha(dados);
         }).catch(erro => {
@@ -94,15 +111,13 @@ class Batalha {
     }
 
     desenharBatalha(dados) {
-        const golpe = this.golpe;
-        this.golpe = null;
-
         this.jogador = dados.jogador.nome;
         this.inimigo = dados.inimigo.nome;
         this.ataques = dados.jogador.ataques;
 
         document.getElementById('info-jogador').innerHTML = this.textoPokemon(dados.jogador);
-        document.getElementById('info-inimigo').innerHTML = this.textoPokemon(dados.inimigo);
+        document.getElementById('info-inimigo').innerHTML = this.textoPokemon(dados.inimigo)
+            + `<p class="hp-texto">Próximos adversários: ${dados.inimigos_restantes}</p>`;
 
         // Pokémon no campo (imagens da PokeAPI)
         document.getElementById('campo').innerHTML =
@@ -127,7 +142,16 @@ class Batalha {
 
         this.desenharAtaques(dados);
         this.desenharTrocas(dados);
-        this.efeitos(dados, golpe);
+        this.desenharBolsa();
+        this.efeitos(dados);
+
+        // o botão da bolsa só aparece durante a batalha
+        if (dados.terminou) {
+            this.fecharBolsa();
+            document.getElementById('botao-bolsa').style.display = 'none';
+        } else {
+            document.getElementById('botao-bolsa').style.display = 'block';
+        }
 
         // acabou (vitória ou derrota): volta para o menu depois de mostrar o resultado
         if (dados.terminou) {
@@ -137,21 +161,20 @@ class Batalha {
         }
     }
 
-    // Aviso com o nome do ataque e Pokémon que "avança" ao atacar
-    efeitos(dados, golpe) {
-        let espera = 0;
+    // Mostra cada ataque da rodada, um de cada vez, na ordem em que aconteceram.
+    // Quem foi derrotado antes de atacar não aparece aqui.
+    efeitos(dados) {
+        for (let i = 0; i < dados.acoes.length; i++) {
+            const acao = dados.acoes[i];
 
-        if (golpe) {
-            this.mostrarAviso(golpe.quem + ' usou ' + golpe.nome + '!');
-            this.mexer('imagem-jogador', 'ataca-jogador');
-            espera = 1000;
-        }
-
-        if (dados.ataque_inimigo != '') {
             setTimeout(() => {
-                this.mostrarAviso(dados.inimigo.nome + ' usou ' + dados.ataque_inimigo + '!');
-                this.mexer('imagem-inimigo', 'ataca-inimigo');
-            }, espera);
+                this.mostrarAviso(acao.pokemon + ' usou ' + acao.golpe + '!');
+                if (acao.quem == 'jogador') {
+                    this.mexer('imagem-jogador', 'ataca-jogador');
+                } else {
+                    this.mexer('imagem-inimigo', 'ataca-inimigo');
+                }
+            }, i * 1000);
         }
     }
 
@@ -217,6 +240,30 @@ class Batalha {
         for (let i = 0; i < this.time.length; i++) {
             this.buscarImagem(this.time[i].pokemon);
         }
+    }
+
+    // Bolsa: escolhe o Pokémon do time e clica no item
+    desenharBolsa() {
+        const select = document.getElementById('pokemon-item');
+        const escolhido = select.value;
+
+        let opcoes = '';
+        for (let i = 0; i < this.time.length; i++) {
+            const p = this.time[i];
+            opcoes += `<option value="${p.pokemon_id}">${p.pokemon} - HP ${p.hp_atual}/${p.hp_maximo} - ${p.status_condicao}</option>`;
+        }
+        select.innerHTML = opcoes;
+        select.value = escolhido;
+
+        let botoes = '';
+        if (this.itens.length == 0) {
+            botoes = '<p>A bolsa está vazia.</p>';
+        }
+        for (let i = 0; i < this.itens.length; i++) {
+            const item = this.itens[i];
+            botoes += `<button onclick="batalha.usarItem(${item.id})">${item.nome} x${item.quantidade} - ${item.descricao}</button>`;
+        }
+        document.getElementById('itens').innerHTML = botoes;
     }
 
     // ---------- PokeAPI ----------

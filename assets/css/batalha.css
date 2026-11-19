@@ -288,3 +288,70 @@ body {
     object-fit: contain;
     image-rendering: pixelated;
 }
+
+/* ===== COLE ESTE BLOCO NO FINAL DO assets/css/batalha.css ===== */
+
+/* ---------- Botões Fugir e Bolsa (um embaixo do outro) ---------- */
+.botoes-topo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5em;
+}
+
+button.voltar {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+/* ---------- Painel da bolsa (abre por cima da batalha) ---------- */
+.painel-bolsa {
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: 22%;
+    transform: translateX(-50%);
+    z-index: 5;
+    width: 45%;
+    max-height: 48%;
+    overflow-y: auto;
+    padding: 1em;
+    box-sizing: border-box;
+    font-size: 1.4em;
+    color: white;
+    background-color: rgba(20, 30, 50, 0.95);
+    border: 0.15em solid #6f8fc0;
+    border-radius: 0.8em;
+}
+
+.painel-bolsa.aberto {
+    display: block;
+}
+
+.painel-bolsa select {
+    width: 100%;
+    font-family: inherit;
+    font-size: 1em;
+}
+
+.painel-bolsa p {
+    margin: 0.4em 0 0 0;
+}
+
+.painel-bolsa button {
+    display: block;
+    width: 100%;
+    margin-top: 0.4em;
+    padding: 0.3em;
+    font-family: inherit;
+    font-size: 1em;
+    color: white;
+    cursor: pointer;
+    background: linear-gradient(#4aa8f0, #1f6fd0);
+    border: 0.1em solid white;
+    border-radius: 0.5em;
+}
+
+.painel-bolsa button:hover {
+    filter: brightness(1.15);
+}
