@@ -25,10 +25,7 @@ body {
     position: absolute;
     height: auto;
 }
-.pikachu    { left: 22.2%; top: 10.8%; width: 3.5%; }
-.charmander { left: 75.6%; top: 10.8%; width: 3.4%; }
-.bulbassauro { left: 21.8%; top: 80.3%; width: 4.6%; }
-.squirtle   { left: 76.2%; top: 86.3%; width: 3.1%; }
+
 
 /* ---------- Título "OLÁ, userName!" ---------- */
 .texto-ash {

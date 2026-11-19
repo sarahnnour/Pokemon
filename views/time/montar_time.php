@@ -17,10 +17,6 @@ if (!isset($_SESSION['usuario_id'])) {
 <body>
     <div class="tela">
 
-        <img class="canto pikachu" src="../../assets/img/pikachu-head.png" alt="Pikachu">
-        <img class="canto charmander" src="../../assets/img/charmander-head.png" alt="Charmander">
-        <img class="canto bulbassauro" src="../../assets/img/bulbassauro-head.png" alt="Bulbassauro">
-        <img class="canto squirtle" src="../../assets/img/squirtle-head.png" alt="Squirtle">
 
         <h1 class="titulo-time">Team Builder</h1>
 
