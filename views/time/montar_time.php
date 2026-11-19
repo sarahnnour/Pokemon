@@ -32,10 +32,7 @@ if (!isset($_SESSION['usuario_id'])) {
             <div id="disponiveis" class="grade grade-disponiveis"></div>
         </div>
 
-        <a class="sair" href="../menu.php">
-            <img src="../../assets/img/icone-sair.png" alt="">
-            Sair
-        </a>
+        <a class="sair" href="../menu.php" title="Sair">&#10005;</a>
     </div>
 
     <script src="../../assets/js/Requisicao.js"></script>

@@ -54,12 +54,9 @@ if (!isset($_SESSION['usuario_id'])) {
             </a>
         </div>
 
-        <a class="sair" href="../src/controllers/UsuarioController.php?acao=sair">
-            <img src="../assets/img/icone-sair.png" alt="">
-            Sair
-        </a>
+        <a class="historico" href="../index.php?pagina=historico" title="Histórico">&#9776;</a>
 
-        <a class="historico" href="../index.php?pagina=historico">Histórico</a>
+        <a class="sair" href="../src/controllers/UsuarioController.php?acao=sair" title="Sair">&#10005;</a>
     </div>
 </body>
 </html>

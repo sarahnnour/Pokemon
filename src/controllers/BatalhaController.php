@@ -74,6 +74,15 @@ class BatalhaController {
         return $batalha->getEstado();
     }
 
+        public function historico($usuarioId) {
+        $pdo = getConnection();
+        $sql = "SELECT * FROM view_historico_batalhas WHERE usuario_id = :usuario_id ORDER BY data_batalha DESC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['usuario_id' => $usuarioId]);
+
+        return ['historico' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+    }
+
     public function usarItem($itemId, $pokemonId) {
         if (!isset($_SESSION['batalha'])) {
             throw new Exception("Nenhuma batalha em andamento");
@@ -131,6 +140,9 @@ try {
 
     if ($acao == 'item') {
         echo json_encode($controller->usarItem($dados['item_id'], $dados['pokemon_id']));
+    }
+    if ($acao == 'historico') {
+        echo json_encode($controller->historico($usuarioId));
     }
 } catch (Exception $e) {
     echo json_encode(['erro' => $e->getMessage()]);
