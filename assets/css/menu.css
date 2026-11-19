@@ -182,3 +182,25 @@ div.botao {
     height: 1.8em;
     width: auto;
 }
+
+.historico {
+    position: absolute;
+    left: 0;
+    top: 91%;
+    width: 11%;
+    height: 9%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    text-decoration: none;
+    color: #e8edf2;
+    font-size: 1.6em;
+    font-weight: 700;
+    background-color: rgba(75, 75, 80, 0.92);
+    border-top-right-radius: 1.2em;
+}
+
+.historico:hover {
+    background-color: rgba(100, 100, 106, 0.95);
+}
