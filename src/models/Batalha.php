@@ -277,6 +277,17 @@ class Batalha {
             }
         }
     }
+
+        // Histórico de batalhas do usuário (usa a view_historico_batalhas)
+    public function listarHistorico($usuarioId) {
+        $sql = "SELECT * FROM view_historico_batalhas
+                WHERE usuario_id = :usuario_id
+                ORDER BY data_batalha DESC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['usuario_id' => $usuarioId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
     // Guardar / recuperar a batalha na sessão entre uma requisição e outra
     public function paraArray() {
         return [

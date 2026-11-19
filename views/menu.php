@@ -58,6 +58,8 @@ if (!isset($_SESSION['usuario_id'])) {
             <img src="../assets/img/icone-sair.png" alt="">
             Sair
         </a>
+
+        <a class="historico" href="../index.php?pagina=historico">Histórico</a>
     </div>
 </body>
 </html>

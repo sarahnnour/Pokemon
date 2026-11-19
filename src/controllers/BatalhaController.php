@@ -63,6 +63,13 @@ class BatalhaController {
     }
 } 
 
+    public function historico($usuarioId) {
+        $pdo = getConnection();
+        $batalha = new Batalha($pdo);
+
+        return ['historico' => $batalha->listarHistorico($usuarioId)];
+    }
+
 // Todas as respostas são JSON
 header('Content-Type: application/json');
 
@@ -96,6 +103,9 @@ try {
     if ($acao == 'trocar') {
         echo json_encode($controller->trocar($dados['pokemon_id']));
  }
+     if ($acao == 'historico') {
+        echo json_encode($controller->historico($usuarioId));
+    }
 } catch (Exception $e) {
     echo json_encode(['erro' => $e->getMessage()]);
 }
