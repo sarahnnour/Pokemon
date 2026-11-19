@@ -18,7 +18,10 @@ if (!isset($_SESSION['usuario_id'])) {
 
         <div class="barra-topo">
             <div id="info-jogador" class="info"></div>
-            <a class="voltar" href="../menu.php">Fugir</a>
+            <div class="botoes-topo">
+                <a class="voltar" href="../menu.php">Fugir</a>
+                <button id="botao-bolsa" class="voltar" style="display: none" onclick="batalha.alternarBolsa()">Bolsa</button>
+            </div>
             <div id="info-inimigo" class="info"></div>
         </div>
 
@@ -33,6 +36,11 @@ if (!isset($_SESSION['usuario_id'])) {
         <div class="painel-baixo">
             <div id="ataques"></div>
             <div id="trocas"></div>
+        </div>
+
+        <div id="painel-bolsa" class="painel-bolsa">
+            <label>Usar em: <select id="pokemon-item"></select></label>
+            <div id="itens"></div>
         </div>
     </div>
 
