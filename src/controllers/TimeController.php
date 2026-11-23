@@ -21,19 +21,33 @@ class TimeController {
         $pdo = getConnection();
         $time = new Time($pdo);
         $time->adicionar($usuarioId, $pokemonId);
+
+        $pokemon = new Pokemon($pdo);
+        $pokemon->carregar($pokemonId);
+        $log = new Log($pdo);
+        $log->registrar($usuarioId, 'time', 'Adicionou ' . $pokemon->getNome() . ' ao time');
     }
 
     public function remover($usuarioId, $pokemonId) {
         $pdo = getConnection();
         $time = new Time($pdo);
         $time->remover($usuarioId, $pokemonId);
+
+        $pokemon = new Pokemon($pdo);
+        $pokemon->carregar($pokemonId);
+        $log = new Log($pdo);
+        $log->registrar($usuarioId, 'time', 'Removeu ' . $pokemon->getNome() . ' do time');
     }
 }
 
 // Todas as respostas são JSON
 header('Content-Type: application/json');
 
+// Log: tudo o que o usuário faz (e os erros) fica registrado
+$log = new Log(getConnection());
+
 if (!isset($_SESSION['usuario_id'])) {
+    $log->registrar(null, 'seguranca', 'Acesso sem login ao TimeController');
     echo json_encode(['erro' => 'Faça login primeiro']);
     exit;
 }
@@ -64,5 +78,6 @@ try {
         echo json_encode(['ok' => true]);
     }
 } catch (Exception $e) {
+    $log->registrar($usuarioId, 'erro', 'Time (' . $acao . '): ' . $e->getMessage());
     echo json_encode(['erro' => $e->getMessage()]);
 }

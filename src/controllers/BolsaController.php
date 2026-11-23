@@ -20,14 +20,21 @@ class BolsaController {
     public function usar($usuarioId, $itemId, $pokemonId) {
         $pdo = getConnection();
         $item = new Item($pdo);
-        $item->usar($usuarioId, $itemId, $pokemonId);
+        $resultado = $item->usar($usuarioId, $itemId, $pokemonId);
+
+        $log = new Log($pdo);
+        $log->registrar($usuarioId, 'bolsa', $resultado);
     }
 }
 
 // Todas as respostas são JSON
 header('Content-Type: application/json');
 
+// Log: tudo o que o usuário faz (e os erros) fica registrado
+$log = new Log(getConnection());
+
 if (!isset($_SESSION['usuario_id'])) {
+    $log->registrar(null, 'seguranca', 'Acesso sem login ao BolsaController');
     echo json_encode(['erro' => 'Faça login primeiro']);
     exit;
 }
@@ -52,5 +59,6 @@ try {
         echo json_encode(['ok' => true]);
     }
 } catch (Exception $e) {
+    $log->registrar($usuarioId, 'erro', 'Bolsa (' . $acao . '): ' . $e->getMessage());
     echo json_encode(['erro' => $e->getMessage()]);
 }

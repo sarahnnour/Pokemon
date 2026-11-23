@@ -15,6 +15,9 @@ class UsuarioController {
 
         $_SESSION['usuario_id'] = $dados['id'];
         $_SESSION['usuario_nome'] = $dados['nome'];
+
+        $log = new Log($pdo);
+        $log->registrar($dados['id'], 'usuario', 'Entrou no jogo (login)');
     }
 
     public function cadastrar($nome, $email, $senha, $confirmarSenha) {
@@ -38,10 +41,18 @@ class UsuarioController {
         }
         
         // o dinheiro inicial (1000) vem do DEFAULT da tabela
-        $usuario->create($nome, $senha, $email);
+        $id = $usuario->create($nome, $senha, $email);
+
+        $log = new Log($pdo);
+        $log->registrar($id, 'usuario', 'Criou a conta ' . $nome);
     }
 
+    // Saiu ou trocou de perfil
     public function sair() {
+        if (isset($_SESSION['usuario_id'])) {
+            $log = new Log(getConnection());
+            $log->registrar($_SESSION['usuario_id'], 'usuario', 'Saiu do jogo (logout)');
+        }
         session_destroy();
     }
 }
@@ -57,6 +68,18 @@ if ($acao == 'entrar') {
         $controller->entrar($_POST['nome'], $_POST['senha']);
         header('Location: ../../index.php');
     } catch (UsuarioNaoEncontradoException $e) {
+        // login errado: se o nome existe, o log vai para a conta desse usuário
+        // (ele vê na tela de Logs). Se o nome não existe, usuario_id fica null.
+        $pdo = getConnection();
+        $usuario = new Usuario($pdo);
+        $id = $usuario->buscarId($_POST['nome']);
+
+        $log = new Log($pdo);
+        if ($id == null) {
+            $log->registrar(null, 'seguranca', 'Login com usuário que não existe: ' . $_POST['nome']);
+        } else {
+            $log->registrar($id, 'seguranca', 'Tentativa de login com senha errada');
+        }
         header('Location: ../../views/usuario/login.php?erro=1');
     }
     exit;
@@ -72,6 +95,8 @@ if ($acao == 'cadastrar') {
         );
         header('Location: ../../views/usuario/login.php?cadastro=1');
     } catch (Exception $e) {
+        $log = new Log(getConnection());
+        $log->registrar(null, 'seguranca', 'Cadastro recusado (' . $_POST['nome'] . '): ' . $e->getMessage());
         header('Location: ../../views/usuario/cadastro.php?erro=' . urlencode($e->getMessage()));
     }
     exit;

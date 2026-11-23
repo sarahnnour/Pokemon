@@ -15,9 +15,6 @@ if (!isset($_SESSION['usuario_id'])) {
 </head>
 <body>
     <div class="tela">
-
-
-      
         <h1 class="texto-ash">
             Olá, <?php echo htmlspecialchars($_SESSION['usuario_nome']); ?>!
             <img class="icone-ash" src="../assets/img/icone-ash.png" alt="Ash">
@@ -54,7 +51,7 @@ if (!isset($_SESSION['usuario_id'])) {
             </a>
         </div>
 
-        <a class="historico" href="../index.php?pagina=historico" title="Histórico">&#9776;</a>
+        <a class="logs" href="../index.php?pagina=logs" title="Logs">&#9776;</a>
 
         <a class="sair" href="../src/controllers/UsuarioController.php?acao=sair" title="Sair">&#10005;</a>
     </div>

@@ -61,30 +61,9 @@ class Usuario {
             'senha' => $senha,
             'email' => $email
         ]);
-    }
 
-    public function read() {
-        $sql = "SELECT * FROM usuario";
-        $stmt = $this->pdo->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function update($id, $nome, $senha, $email, $dinheiro) {
-        $sql = "UPDATE usuario SET nome = :nome, senha = :senha, email = :email, dinheiro = :dinheiro WHERE id = :id";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            'id' => $id,
-            'nome' => $nome,
-            'senha' => $senha,
-            'email' => $email,
-            'dinheiro' => $dinheiro
-        ]);
-    }
-
-    public function delete($id) {
-        $sql = "DELETE FROM usuario WHERE id = :id";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['id' => $id]);
+        // id do usuário criado (usado no log)
+        return $this->pdo->lastInsertId();
     }
 
     public function carregar($id) {
@@ -116,11 +95,24 @@ class Usuario {
         return $dados;
     }
 
-        public function nomeExiste($nome) {
+    public function nomeExiste($nome) {
         $sql = "SELECT id FROM usuario WHERE nome = :nome";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['nome' => $nome]);
         return $stmt->fetch(PDO::FETCH_ASSOC) != false;
+    }
+
+    // id do usuário pelo nome (null se não existir). Usado no log de login errado.
+    public function buscarId($nome) {
+        $sql = "SELECT id FROM usuario WHERE nome = :nome";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['nome' => $nome]);
+        $id = $stmt->fetchColumn();
+
+        if ($id === false) {
+            return null;
+        }
+        return $id;
     }
 
     public function emailExiste($email) {

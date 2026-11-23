@@ -26,7 +26,8 @@ class Item {
         return $dados;
     }
 
-    // Transação: se qualquer passo falhar, nada é cobrado nem guardado
+    // Transação: se qualquer passo falhar, nada é cobrado nem guardado.
+    // Devolve os dados do item comprado (o controller usa no log).
     public function comprar($usuarioId, $itemId) {
         $this->pdo->beginTransaction();
 
@@ -42,9 +43,12 @@ class Item {
             $this->pdo->rollBack();
             throw $e;
         }
+
+        return $item;
     }
 
-    // Transação: se o item não puder ser usado, a unidade volta para a bolsa
+    // Transação: se o item não puder ser usado, a unidade volta para a bolsa.
+    // Devolve o texto do que aconteceu (vai para o log).
     public function usar($usuarioId, $itemId, $pokemonId) {
         $this->pdo->beginTransaction();
 
@@ -54,13 +58,15 @@ class Item {
             $bolsa = new Bolsa($this->pdo);
             $bolsa->remover($usuarioId, $itemId);
 
-            $this->aplicar($item, $usuarioId, $pokemonId);
+            $resultado = $this->aplicar($item, $usuarioId, $pokemonId);
 
             $this->pdo->commit();
         } catch (Exception $e) {
             $this->pdo->rollBack();
             throw $e;
         }
+
+        return 'Usou ' . $item['nome'] . ' em ' . $resultado;
     }
 
     private function cobrar($usuarioId, $preco) {
@@ -90,17 +96,15 @@ class Item {
         }
 
         if ($item['tipo'] == 'restaurador') {
-            $this->usarRestaurador($item, $p);
+            return $this->usarRestaurador($item, $p);
         }
         if ($item['tipo'] == 'cura') {
-            $this->usarCura($item, $p);
+            return $this->usarCura($item, $p);
         }
         if ($item['tipo'] == 'reviver') {
-            $this->usarReviver($item, $p);
+            return $this->usarReviver($item, $p);
         }
-        if ($item['tipo'] == 'evolucao') {
-            $this->usarEvolucao($p);
-        }
+        return $this->usarEvolucao($p);
     }
 
     private function usarRestaurador($item, $p) {
@@ -131,8 +135,13 @@ class Item {
             $status = 'Normal';
         }
 
-        // o trigger trigger_limite_hp não deixa passar do HP máximo
+        // o HP nunca passa do máximo
+        if ($hp > $p['hp_maximo']) {
+            $hp = $p['hp_maximo'];
+        }
+
         $this->atualizarTime($p, $hp, $status);
+        return $p['pokemon'] . ': HP ' . $p['hp_atual'] . ' -> ' . $hp . '/' . $p['hp_maximo'] . ', condição ' . $status;
     }
 
     private function usarCura($item, $p) {
@@ -153,6 +162,7 @@ class Item {
         }
 
         $this->atualizarTime($p, $p['hp_atual'], 'Normal');
+        return $p['pokemon'] . ': curou ' . $p['status_condicao'];
     }
 
     private function usarReviver($item, $p) {
@@ -160,12 +170,10 @@ class Item {
             throw new Exception("Esse Pokémon não está desmaiado");
         }
 
-        // Revive: metade da vida. Full Revive: vida toda.
+        // Revive: volta com metade da vida
         $hp = intval($p['hp_maximo'] / 2);
-        if ($item['nome'] == 'Full Revive') {
-            $hp = $p['hp_maximo'];
-        }
         $this->atualizarTime($p, $hp, $p['status_condicao']);
+        return $p['pokemon'] . ': reviveu com HP ' . $hp . '/' . $p['hp_maximo'];
     }
 
     private function usarEvolucao($p) {
@@ -182,11 +190,11 @@ class Item {
         }
 
         // o HP atual ganha a diferença entre o HP máximo novo e o antigo
-        $sql = "SELECT hp_maximo FROM pokemon WHERE id = :id";
+        $sql = "SELECT nome, hp_maximo FROM pokemon WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id' => $p['proxima_evolucao_id']]);
-        $novoMaximo = $stmt->fetchColumn();
-        $hp = $p['hp_atual'] + ($novoMaximo - $p['hp_maximo']);
+        $evolucao = $stmt->fetch(PDO::FETCH_ASSOC);
+        $hp = $p['hp_atual'] + ($evolucao['hp_maximo'] - $p['hp_maximo']);
 
         $sql = "UPDATE time SET pokemon_id = :novo_id, hp_atual = :hp
                 WHERE usuario_id = :usuario_id AND pokemon_id = :pokemon_id";
@@ -197,6 +205,8 @@ class Item {
             'usuario_id' => $p['usuario_id'],
             'pokemon_id' => $p['pokemon_id']
         ]);
+
+        return $p['pokemon'] . ': evoluiu para ' . $evolucao['nome'];
     }
 
     private function atualizarTime($p, $hp, $status) {

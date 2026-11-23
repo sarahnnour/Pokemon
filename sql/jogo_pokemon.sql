@@ -94,6 +94,22 @@ CREATE TABLE log_batalha (
         FOREIGN KEY (pokemon_id) REFERENCES pokemon(id)
 );
 
+-- Log de tudo o que acontece no jogo (Log.php): cada evento da batalha e cada ação do usuário.
+-- tipo: 'usuario', 'batalha', 'loja', 'bolsa', 'time', 'erro' ou 'seguranca'
+-- usuario_id fica NULL quando ninguém está logado (ex: login com senha errada)
+CREATE TABLE log_acao (
+    id INT NOT NULL AUTO_INCREMENT,
+    usuario_id INT NULL,
+    tipo VARCHAR(20) NOT NULL,
+    descricao TEXT NOT NULL,
+    ip VARCHAR(45) NOT NULL,
+    data_acao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_log_acao_usuario
+        FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+        ON DELETE CASCADE
+);
+
 
 -- ==============================================================================
 -- 2. DML (Data Manipulation Language) - Dados fixos do jogo
@@ -155,7 +171,6 @@ INSERT INTO item (nome, descricao, preco, tipo) VALUES
 ('Full Heal',     'Cura todas as condições',     150, 'cura'),
 -- Reviver
 ('Revive',        'Revive um Pokémon desmaiado com metade da vida', 400, 'reviver'),
-('Full Revive',   'Revive um Pokémon desmaiado com toda a vida',    700, 'reviver'),
 -- Evolução
 ('Pedra de Evolução', 'Evolui um Pokémon para o próximo estágio',   1200, 'evolucao');
 
@@ -165,7 +180,7 @@ INSERT INTO item (nome, descricao, preco, tipo) VALUES
 -- ==============================================================================
 
 -- View 1: time de cada usuário (Team Builder e Batalha)
-CCREATE VIEW view_time_usuario AS
+CREATE VIEW view_time_usuario AS
 SELECT
     t.id AS time_id,
     t.usuario_id,
@@ -212,41 +227,3 @@ FROM usuario u
 INNER JOIN log_batalha l ON l.usuario_id = u.id
 WHERE l.resultado = 'vitoria'
 GROUP BY u.id, u.nome;
-
-
--- ==============================================================================
--- 4. TRIGGERS
--- ==============================================================================
-
-DELIMITER //
-
--- Trigger 1: ao registrar uma vitória no log, o dinheiro vai para o usuário
-CREATE TRIGGER trigger_dinheiro_vitoria
-AFTER INSERT ON log_batalha
-FOR EACH ROW
-BEGIN
-    IF NEW.resultado = 'vitoria' THEN
-        UPDATE usuario
-        SET dinheiro = dinheiro + NEW.dinheiro_ganho
-        WHERE id = NEW.usuario_id;
-    END IF;
-END //
-
--- Trigger 2: o HP atual nunca passa do máximo do Pokémon e nunca fica abaixo de 0
-CREATE TRIGGER trigger_limite_hp
-BEFORE UPDATE ON time
-FOR EACH ROW
-BEGIN
-    DECLARE maximo INT;
-
-    SELECT hp_maximo INTO maximo FROM pokemon WHERE id = NEW.pokemon_id;
-
-    IF NEW.hp_atual > maximo THEN
-        SET NEW.hp_atual = maximo;
-    END IF;
-    IF NEW.hp_atual < 0 THEN
-        SET NEW.hp_atual = 0;
-    END IF;
-END //
-
-DELIMITER ;

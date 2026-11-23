@@ -127,53 +127,6 @@ class Pokemon {
         $this->status = $status;
     }
 
-
-    public function create($id, $nome, $tipo, $nivel, $hp_maximo, $ataque, $defesa, $velocidade, $prioridade, $proxima_evolucao_id) {
-        $sql = "INSERT INTO pokemon (id, nome, tipo, nivel, hp_maximo, ataque, defesa, velocidade, prioridade, proxima_evolucao_id) VALUES (:id, :nome, :tipo, :nivel, :hp_maximo, :ataque, :defesa, :velocidade, :prioridade, :proxima_evolucao_id)";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            'id' => $id,
-            'nome' => $nome,
-            'tipo' => $tipo,
-            'nivel' => $nivel,
-            'hp_maximo' => $hp_maximo,
-            'ataque' => $ataque,
-            'defesa' => $defesa,
-            'velocidade' => $velocidade,
-            'prioridade' => $prioridade,
-            'proxima_evolucao_id' => $proxima_evolucao_id
-        ]);
-    }
-
-    public function read() {
-        $sql = "SELECT * FROM pokemon";
-        $stmt = $this->pdo->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function update($id, $nome, $tipo, $nivel, $hp_maximo, $ataque, $defesa, $velocidade, $prioridade, $proxima_evolucao_id) {
-        $sql = "UPDATE pokemon SET nome = :nome, tipo = :tipo, nivel = :nivel, hp_maximo = :hp_maximo, ataque = :ataque, defesa = :defesa, velocidade = :velocidade, prioridade = :prioridade, proxima_evolucao_id = :proxima_evolucao_id WHERE id = :id";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            'id' => $id,
-            'nome' => $nome,
-            'tipo' => $tipo,
-            'nivel' => $nivel,
-            'hp_maximo' => $hp_maximo,
-            'ataque' => $ataque,
-            'defesa' => $defesa,
-            'velocidade' => $velocidade,
-            'prioridade' => $prioridade,
-            'proxima_evolucao_id' => $proxima_evolucao_id
-        ]);
-    }
-
-    public function delete($id) {
-        $sql = "DELETE FROM pokemon WHERE id = :id";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['id' => $id]);
-    }
-
     public function carregar($id) {
         $sql = "SELECT * FROM pokemon WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);

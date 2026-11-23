@@ -59,7 +59,8 @@ class Batalha {
 
         $this->montarAdversarios();
 
-        $this->mensagens[] = $this->jogador->getNome() . ' enfrenta ' . $this->inimigo->getNome() . '!';
+        $this->mensagens[] = 'Batalha iniciada: ' . $this->jogador->getNome() . ' (HP ' . $this->jogador->getHpAtual() . '/' . $this->jogador->getHpMaximo() . ') enfrenta ' . $this->inimigo->getNome() . '. Adversários na fila: ' . count($this->fila) . '. Prêmio: ' . $this->recompensa . ' pokédollar.';
+        $this->registrarLog();
     }
 
     // Dificuldade = vitórias / 5 (máximo 5). Número = estágio de evolução de cada adversário:
@@ -139,23 +140,23 @@ class Batalha {
         $this->mensagens = [];
         $this->acoes = [];
         $this->validarAtaque($numero);
-        $numeroInimigo = $this->escolherAtaqueInimigo();
 
         // quem tem maior prioridade ataca primeiro; empate: maior velocidade.
         // Quem foi derrotado antes de atacar não ataca.
         if ($this->jogadorPrimeiro()) {
             $this->turno($this->jogador, $this->inimigo, $numero);
             if (!$this->inimigo->estaDesmaiado()) {
-                $this->turno($this->inimigo, $this->jogador, $numeroInimigo);
+                $this->turno($this->inimigo, $this->jogador);
             }
         } else {
-            $this->turno($this->inimigo, $this->jogador, $numeroInimigo);
+            $this->turno($this->inimigo, $this->jogador);
             if (!$this->jogador->estaDesmaiado()) {
                 $this->turno($this->jogador, $this->inimigo, $numero);
             }
         }
 
         $this->fimDeRodada();
+        $this->registrarLog();
     }
 
     // Fim da rodada (ataque, troca ou item): status, salvar o HP e ver quem desmaiou
@@ -230,12 +231,18 @@ class Batalha {
         return $this->jogador->getVelocidade() >= $this->inimigo->getVelocidade();
     }
 
-    private function turno($atacante, $alvo, $numero) {
+    // Sobrecarga: o número do ataque é opcional.
+    // Sem o número (vez do adversário), o ataque é sorteado.
+    private function turno($atacante, $alvo, $numero = null) {
+        if ($numero === null) {
+            $numero = $this->escolherAtaqueInimigo();
+        }
+
         $ataques = $atacante->getAtaques();
         $golpe = $ataques[$numero];
 
         $dano = $atacante->atacar($numero, $alvo);
-        $this->mensagens[] = $atacante->getNome() . ' usou ' . $golpe['nome'] . ' e causou ' . $dano . ' de dano.';
+        $this->mensagens[] = $atacante->getNome() . ' usou ' . $golpe['nome'] . ' e causou ' . $dano . ' de dano em ' . $alvo->getNome() . ' (HP ' . $alvo->getHpAtual() . '/' . $alvo->getHpMaximo() . ').';
 
         // o JavaScript usa esta lista para mostrar quem atacou, na ordem certa
         $quem = 'jogador';
@@ -293,8 +300,8 @@ class Batalha {
         ]);
     }
 
-    // Transação: salva o HP/condição do Pokémon e registra o log.
-    // O dinheiro da vitória é somado pelo trigger_dinheiro_vitoria (não somar aqui!)
+    // Transação: salva o HP/condição do Pokémon, registra o log da batalha e soma o dinheiro.
+    // Se qualquer passo falhar, nada é salvo (rollBack).
     private function salvar() {
         $this->pdo->beginTransaction();
 
@@ -312,6 +319,11 @@ class Batalha {
                 'resultado' => $this->resultado,
                 'dinheiro_ganho' => $this->dinheiroGanho
             ]);
+
+            // vitória: o dinheiro vai para o usuário (na derrota soma 0)
+            $sql = "UPDATE usuario SET dinheiro = dinheiro + :dinheiro WHERE id = :id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['dinheiro' => $this->dinheiroGanho, 'id' => $this->usuarioId]);
 
             $this->pdo->commit();
         } catch (Exception $e) {
@@ -346,14 +358,16 @@ class Batalha {
 
         // guarda o HP e a condição do Pokémon que está saindo
         $this->salvarPokemon();
+        $saiu = $this->jogador->getNome();
 
         $this->jogador = $this->criarPokemon($linha['pokemon']);
         $this->jogador->restaurarEstado($linha['hp_atual'], $linha['status_condicao']);
-        $this->mensagens[] = 'Você trocou para ' . $this->jogador->getNome() . '!';
+        $this->mensagens[] = 'Você trocou ' . $saiu . ' por ' . $this->jogador->getNome() . ' (HP ' . $this->jogador->getHpAtual() . '/' . $this->jogador->getHpMaximo() . ').';
 
         if (!$estavaDesmaiado) {
             $this->turnoDoInimigo();
         }
+        $this->registrarLog();
     }
 
     // Usa um item da bolsa em um Pokémon do time. Só itens de batalha (HP, cura e reviver).
@@ -375,8 +389,8 @@ class Batalha {
         $estavaDesmaiado = $this->jogador->estaDesmaiado();
 
         // o Item mexe no banco (o HP do jogador já está salvo lá). Se falhar, a unidade volta para a bolsa.
-        $item->usar($this->usuarioId, $itemId, $pokemonId);
-        $this->mensagens[] = 'Você usou ' . $dados['nome'] . '!';
+        // usar() devolve o texto do que aconteceu (ex: "Usou Potion em Pikachu: HP 30 -> 50/85")
+        $this->mensagens[] = $item->usar($this->usuarioId, $itemId, $pokemonId);
 
         // se o item foi no Pokémon em campo, atualiza o HP e a condição dele
         if ($pokemonId == $this->jogador->getId()) {
@@ -393,11 +407,21 @@ class Batalha {
         if (!$estavaDesmaiado) {
             $this->turnoDoInimigo();
         }
+        $this->registrarLog();
+    }
+
+    // Grava no log (tabela log_acao) cada mensagem do que aconteceu nesta ação.
+    // A Batalha USA o Log (associação).
+    private function registrarLog() {
+        $log = new Log($this->pdo);
+        foreach ($this->mensagens as $mensagem) {
+            $log->registrar($this->usuarioId, 'batalha', $mensagem);
+        }
     }
 
     // O adversário ataca (usado quando o jogador gasta o turno com troca ou item)
     private function turnoDoInimigo() {
-        $this->turno($this->inimigo, $this->jogador, $this->escolherAtaqueInimigo());
+        $this->turno($this->inimigo, $this->jogador);
         $this->fimDeRodada();
     }
 

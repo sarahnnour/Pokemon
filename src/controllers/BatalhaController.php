@@ -27,6 +27,14 @@ class BatalhaController {
 
     public function iniciar($usuarioId, $pokemonId) {
         $pdo = getConnection();
+
+        // começou outra batalha sem terminar a anterior (fechou a página, por exemplo)
+        if (isset($_SESSION['batalha'])) {
+            unset($_SESSION['batalha']);
+            $log = new Log($pdo);
+            $log->registrar($usuarioId, 'batalha', 'Abandonou a batalha anterior sem terminar');
+        }
+
         $batalha = new Batalha($pdo);
         $batalha->iniciar($usuarioId, $pokemonId);
 
@@ -37,62 +45,45 @@ class BatalhaController {
     }
 
     public function atacar($numero) {
-        if (!isset($_SESSION['batalha'])) {
-            throw new Exception("Nenhuma batalha em andamento");
-        }
-
-        $pdo = getConnection();
-        $batalha = new Batalha($pdo);
-        $batalha->restaurar($_SESSION['batalha']);
+        $batalha = $this->batalhaDaSessao();
         $batalha->rodada($numero);
-
-        if ($batalha->terminou()) {
-            unset($_SESSION['batalha']);
-        } else {
-            $_SESSION['batalha'] = $batalha->paraArray();
-        }
-
-        return $batalha->getEstado();
+        return $this->guardarNaSessao($batalha);
     }
 
     public function trocar($pokemonId) {
-        if (!isset($_SESSION['batalha'])) {
-            throw new Exception("Nenhuma batalha em andamento");
-        }
-
-        $pdo = getConnection();
-        $batalha = new Batalha($pdo);
-        $batalha->restaurar($_SESSION['batalha']);
+        $batalha = $this->batalhaDaSessao();
         $batalha->trocar($pokemonId);
-
-        if ($batalha->terminou()) {
-            unset($_SESSION['batalha']);
-        } else {
-            $_SESSION['batalha'] = $batalha->paraArray();
-        }
-
-        return $batalha->getEstado();
-    }
-
-        public function historico($usuarioId) {
-        $pdo = getConnection();
-        $sql = "SELECT * FROM view_historico_batalhas WHERE usuario_id = :usuario_id ORDER BY data_batalha DESC";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(['usuario_id' => $usuarioId]);
-
-        return ['historico' => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+        return $this->guardarNaSessao($batalha);
     }
 
     public function usarItem($itemId, $pokemonId) {
+        $batalha = $this->batalhaDaSessao();
+        $batalha->usarItem($itemId, $pokemonId);
+        return $this->guardarNaSessao($batalha);
+    }
+
+    // Botão "Fugir": a batalha acaba sem vitória e sem derrota
+    public function fugir($usuarioId) {
+        if (isset($_SESSION['batalha'])) {
+            unset($_SESSION['batalha']);
+            $log = new Log(getConnection());
+            $log->registrar($usuarioId, 'batalha', 'Fugiu da batalha');
+        }
+    }
+
+    // A batalha fica guardada na sessão entre uma rodada e outra
+    private function batalhaDaSessao() {
         if (!isset($_SESSION['batalha'])) {
             throw new Exception("Nenhuma batalha em andamento");
         }
 
-        $pdo = getConnection();
-        $batalha = new Batalha($pdo);
+        $batalha = new Batalha(getConnection());
         $batalha->restaurar($_SESSION['batalha']);
-        $batalha->usarItem($itemId, $pokemonId);
+        return $batalha;
+    }
 
+    // Se a batalha terminou, sai da sessão. Devolve o estado para o JavaScript.
+    private function guardarNaSessao($batalha) {
         if ($batalha->terminou()) {
             unset($_SESSION['batalha']);
         } else {
@@ -106,7 +97,11 @@ class BatalhaController {
 // Todas as respostas são JSON
 header('Content-Type: application/json');
 
+// Log: tudo o que o usuário faz (e os erros) fica registrado
+$log = new Log(getConnection());
+
 if (!isset($_SESSION['usuario_id'])) {
+    $log->registrar(null, 'seguranca', 'Acesso sem login ao BatalhaController');
     echo json_encode(['erro' => 'Faça login primeiro']);
     exit;
 }
@@ -141,9 +136,14 @@ try {
     if ($acao == 'item') {
         echo json_encode($controller->usarItem($dados['item_id'], $dados['pokemon_id']));
     }
-    if ($acao == 'historico') {
-        echo json_encode($controller->historico($usuarioId));
+
+    // Fugir é um link: registra e volta para o menu
+    if ($acao == 'fugir') {
+        $controller->fugir($usuarioId);
+        header('Location: ../../views/menu.php');
+        exit;
     }
 } catch (Exception $e) {
+    $log->registrar($usuarioId, 'erro', 'Batalha (' . $acao . '): ' . $e->getMessage());
     echo json_encode(['erro' => $e->getMessage()]);
 }

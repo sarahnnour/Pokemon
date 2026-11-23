@@ -15,7 +15,6 @@ class Charmander extends Pokemon {
             ['nome' => 'Arranhão',     'tipo' => 'Normal', 'poder' => 40, 'usos' => null],
             ['nome' => 'Fogo Fátuo',   'tipo' => 'Fogo',   'poder' => 20, 'usos' => 3, 'efeito' => 'queimar'],
             ['nome' => 'Lança-chamas', 'tipo' => 'Fogo',   'poder' => 90, 'usos' => 2]
-
         ]);
     }
 }

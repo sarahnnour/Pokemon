@@ -19,7 +19,8 @@ if (!isset($_SESSION['usuario_id'])) {
         <div class="barra-topo">
             <div id="info-jogador" class="info"></div>
             <div class="botoes-topo">
-                <a class="voltar" href="../menu.php">Fugir</a>
+                <!-- link simples: funciona a qualquer momento da luta (o controller registra a fuga no log) -->
+                <a class="voltar" href="../../src/controllers/BatalhaController.php?acao=fugir">Fugir</a>
                 <button id="botao-bolsa" class="voltar" style="display: none" onclick="batalha.alternarBolsa()">Bolsa</button>
             </div>
             <div id="info-inimigo" class="info"></div>

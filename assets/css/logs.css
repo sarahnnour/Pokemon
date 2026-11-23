@@ -1,0 +1,110 @@
+/* Usa o .tela, .linha e .sair do menu.css */
+
+.titulo-logs {
+    position: absolute;
+    left: 50.4%;
+    top: 19.3%;
+    transform: translateX(-50%);
+    margin: 0;
+    font-size: 3.8em;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #1d3358;
+}
+
+/* área com rolagem onde fica a tabela */
+.area-logs {
+    position: absolute;
+    left: 26.8%;
+    top: 37%;
+    width: 47.4%;
+    height: 46%;
+    overflow-y: auto;
+    padding-right: 0.8em;
+    box-sizing: border-box;
+    color: #1d3358;
+}
+
+.area-logs::-webkit-scrollbar { width: 0.8em; }
+.area-logs::-webkit-scrollbar-thumb {
+    background: #2a5db0;
+    border-radius: 0.4em;
+}
+
+.area-logs table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.3em;
+    text-align: center;
+}
+
+.area-logs th {
+    padding: 0.3em;
+    color: white;
+    background-color: #2a5db0;
+}
+
+.area-logs td {
+    padding: 0.3em;
+    background: linear-gradient(#f3f7fb, #cfd9e6);
+    border-bottom: 0.1em solid #8ea3bd;
+}
+
+.vitoria { color: #1f7a1f; }
+.derrota { color: #b00020; }
+
+.vazio {
+    margin: 0;
+    font-size: 1.6em;
+    text-align: center;
+}
+
+/* ---------- Abas dos logs ---------- */
+.abas-logs {
+    position: absolute;
+    left: 50%;
+    top: 31%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5em;
+}
+
+.abas-logs button {
+    padding: 0.2em 1em;
+    font-family: inherit;
+    font-size: 1.2em;
+    color: #1d3358;
+    cursor: pointer;
+    background: linear-gradient(#f3f7fb, #cfd9e6);
+    border: 0.1em solid #8ea3bd;
+    border-radius: 0.4em;
+}
+
+.abas-logs button.ativa {
+    color: white;
+    background: #2a5db0;
+}
+
+.area-logs h2 {
+    margin: 0.4em 0 0.2em 0;
+    font-size: 1.4em;
+}
+
+.area-logs td.descricao {
+    text-align: left;
+}
+
+/* tabela dos logs: letra menor porque tem mais texto */
+.area-logs .tabela-logs {
+    font-size: 1em;
+}
+
+.tabela-logs td:first-child {
+    white-space: nowrap;
+}
+
+.erro,
+.seguranca {
+    color: #b00020;
+}

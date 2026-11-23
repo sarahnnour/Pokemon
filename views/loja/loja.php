@@ -16,7 +16,6 @@ if (!isset($_SESSION['usuario_id'])) {
 </head>
 <body>
     <div class="tela">
-
         <h1 class="titulo-loja">Poké Mart</h1>
         <p class="saldo">Pokédollar Atual: <span id="dinheiro"></span> ¥</p>
 

@@ -22,14 +22,24 @@ class LojaController {
     public function comprar($usuarioId, $itemId) {
         $pdo = getConnection();
         $item = new Item($pdo);
-        $item->comprar($usuarioId, $itemId);
+        $comprado = $item->comprar($usuarioId, $itemId);
+
+        $usuario = new Usuario($pdo);
+        $usuario->carregar($usuarioId);
+
+        $log = new Log($pdo);
+        $log->registrar($usuarioId, 'loja', 'Comprou ' . $comprado['nome'] . ' por ' . $comprado['preco'] . ' pokédollar. Saldo: ' . $usuario->getDinheiro());
     }
 }
 
 // Todas as respostas são JSON
 header('Content-Type: application/json');
 
+// Log: tudo o que o usuário faz (e os erros) fica registrado
+$log = new Log(getConnection());
+
 if (!isset($_SESSION['usuario_id'])) {
+    $log->registrar(null, 'seguranca', 'Acesso sem login ao LojaController');
     echo json_encode(['erro' => 'Faça login primeiro']);
     exit;
 }
@@ -54,5 +64,6 @@ try {
         echo json_encode(['ok' => true]);
     }
 } catch (Exception $e) {
+    $log->registrar($usuarioId, 'erro', 'Loja (' . $acao . '): ' . $e->getMessage());
     echo json_encode(['erro' => $e->getMessage()]);
 }

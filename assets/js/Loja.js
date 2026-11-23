@@ -31,7 +31,6 @@ class Loja {
         }
     }
 
-
     desenharItens(lista) {
         let html = '';
         for (let i = 0; i < lista.length; i++) {
@@ -69,16 +68,11 @@ class Loja {
         if (item.tipo == 'evolucao') {
             return 'moon-stone';
         }
-        // na API o Full Revive se chama Max Revive
-        if (item.nome == 'Full Revive') {
-            return 'max-revive';
-        }
         return item.nome.toLowerCase().replaceAll(' ', '-');
     }
 
     // Consome a PokeAPI: https://pokeapi.co/api/v2/item/potion
-       // Consome a PokeAPI: https://pokeapi.co/api/v2/item/potion
-       buscarImagem(item) {
+    buscarImagem(item) {
         const nome = this.nomeNaApi(item);
         const url = 'https://pokeapi.co/api/v2/item/' + nome;
         // endereço padrão dos sprites de itens (usado se a API não trouxer imagem)

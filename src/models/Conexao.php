@@ -1,18 +1,14 @@
 <?php
-/**
- * Temos que lembrar de usar em todos os outro arquivos:
- *   require_once 'conexao.php';
- *   $pdo = getConnection();
- */
+// Conexão com o banco usando PDO.
+// Nos controllers: require_once 'Conexao.php';  $pdo = getConnection();
 
 function getConnection(): PDO
 {
     $host    = "localhost";
-    $dbname  = "jogo_pokemon";  
+    $dbname  = "jogo_pokemon";
     $user    = "root";
-    $pass    = "";          
+    $pass    = "";
     $charset = "utf8mb4";
-
 
     $dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";
 
@@ -27,11 +23,3 @@ function getConnection(): PDO
         die("Erro de conexão: " . $e->getMessage());
     }
 }
-
-
-// Para testes:
-
-/*if (basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'])) {
-    $pdo = getConnection();
-    echo "Conectado com sucesso!";
-} */

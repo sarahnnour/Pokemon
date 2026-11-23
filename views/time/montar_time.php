@@ -16,8 +16,6 @@ if (!isset($_SESSION['usuario_id'])) {
 </head>
 <body>
     <div class="tela">
-
-
         <h1 class="titulo-time">Team Builder</h1>
 
         <hr class="linha">

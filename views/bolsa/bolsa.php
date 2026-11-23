@@ -16,8 +16,6 @@ if (!isset($_SESSION['usuario_id'])) {
 </head>
 <body>
     <div class="tela">
-
-
         <h1 class="titulo-loja">Bolsa</h1>
 
         <hr class="linha">
@@ -30,7 +28,7 @@ if (!isset($_SESSION['usuario_id'])) {
             <div id="itens"></div>
         </div>
 
-      <a class="sair" href="../menu.php" title="Sair">&#10005;</a>
+        <a class="sair" href="../menu.php" title="Sair">&#10005;</a>
     </div>
 
     <script src="../../assets/js/Requisicao.js"></script>
