@@ -10,11 +10,9 @@ class Gyarados extends Pokemon {
         $this->carregar(15);
 
         $this->setAtaques([
-            ['nome' => 'Mordida',       'tipo' => 'Normal', 'poder' => 65,  'usos' => null],
-            ['nome' => 'Jato d\'Água',  'tipo' => 'Agua',   'poder' => 80,  'usos' => 10],
-            ['nome' => 'Hidro Bomba',   'tipo' => 'Agua',   'poder' => 110, 'usos' => 5]
+            ['nome' => 'Mordida',       'tipo' => 'Normal', 'poder' => 55,  'usos' => null],
+            ['nome' => 'Jato d\'Água',  'tipo' => 'Agua',   'poder' => 70,  'usos' => 7],
+            ['nome' => 'Hidro Bomba',   'tipo' => 'Agua',   'poder' => 100, 'usos' => 3]
         ]);
     }
-}       
-       
-       
+}

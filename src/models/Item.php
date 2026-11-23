@@ -26,42 +26,42 @@ class Item {
         return $dados;
     }
 
-        // Transação: se qualquer passo falhar, nada é cobrado nem guardado
-        public function comprar($usuarioId, $itemId) {
-            $this->pdo->beginTransaction();
-    
-            try {
-                $item = $this->carregar($itemId);
-                $this->cobrar($usuarioId, $item['preco']);
-    
-                $bolsa = new Bolsa($this->pdo);
-                $bolsa->adicionar($usuarioId, $itemId);
-    
-                $this->pdo->commit();
-            } catch (Exception $e) {
-                $this->pdo->rollBack();
-                throw $e;
-            }
+    // Transação: se qualquer passo falhar, nada é cobrado nem guardado
+    public function comprar($usuarioId, $itemId) {
+        $this->pdo->beginTransaction();
+
+        try {
+            $item = $this->carregar($itemId);
+            $this->cobrar($usuarioId, $item['preco']);
+
+            $bolsa = new Bolsa($this->pdo);
+            $bolsa->adicionar($usuarioId, $itemId);
+
+            $this->pdo->commit();
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            throw $e;
         }
-    
-        // Transação: se o item não puder ser usado, a unidade volta para a bolsa
-        public function usar($usuarioId, $itemId, $pokemonId) {
-            $this->pdo->beginTransaction();
-    
-            try {
-                $item = $this->carregar($itemId);
-    
-                $bolsa = new Bolsa($this->pdo);
-                $bolsa->remover($usuarioId, $itemId);
-    
-                $this->aplicar($item, $usuarioId, $pokemonId);
-    
-                $this->pdo->commit();
-            } catch (Exception $e) {
-                $this->pdo->rollBack();
-                throw $e;
-            }
+    }
+
+    // Transação: se o item não puder ser usado, a unidade volta para a bolsa
+    public function usar($usuarioId, $itemId, $pokemonId) {
+        $this->pdo->beginTransaction();
+
+        try {
+            $item = $this->carregar($itemId);
+
+            $bolsa = new Bolsa($this->pdo);
+            $bolsa->remover($usuarioId, $itemId);
+
+            $this->aplicar($item, $usuarioId, $pokemonId);
+
+            $this->pdo->commit();
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            throw $e;
         }
+    }
 
     private function cobrar($usuarioId, $preco) {
         $sql = "SELECT dinheiro FROM usuario WHERE id = :id";
@@ -96,7 +96,7 @@ class Item {
             $this->usarCura($item, $p);
         }
         if ($item['tipo'] == 'reviver') {
-            $this->usarReviver($p);
+            $this->usarReviver($item, $p);
         }
         if ($item['tipo'] == 'evolucao') {
             $this->usarEvolucao($p);
@@ -107,7 +107,10 @@ class Item {
         if ($p['hp_atual'] == 0) {
             throw new Exception("Pokémon desmaiado. Use um Revive");
         }
-        if ($p['hp_atual'] >= $p['hp_maximo']) {
+
+        // Full Restore ainda funciona com HP cheio se o Pokémon tiver condição
+        $temCondicao = $p['status_condicao'] != 'Normal';
+        if ($p['hp_atual'] >= $p['hp_maximo'] && !($item['nome'] == 'Full Restore' && $temCondicao)) {
             throw new Exception("O HP já está cheio");
         }
 
@@ -152,12 +155,16 @@ class Item {
         $this->atualizarTime($p, $p['hp_atual'], 'Normal');
     }
 
-    private function usarReviver($p) {
+    private function usarReviver($item, $p) {
         if ($p['hp_atual'] > 0) {
             throw new Exception("Esse Pokémon não está desmaiado");
         }
 
+        // Revive: metade da vida. Full Revive: vida toda.
         $hp = intval($p['hp_maximo'] / 2);
+        if ($item['nome'] == 'Full Revive') {
+            $hp = $p['hp_maximo'];
+        }
         $this->atualizarTime($p, $hp, $p['status_condicao']);
     }
 

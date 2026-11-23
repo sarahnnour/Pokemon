@@ -165,7 +165,7 @@ INSERT INTO item (nome, descricao, preco, tipo) VALUES
 -- ==============================================================================
 
 -- View 1: time de cada usuário (Team Builder e Batalha)
-CREATE VIEW view_time_usuario AS
+CCREATE VIEW view_time_usuario AS
 SELECT
     t.id AS time_id,
     t.usuario_id,

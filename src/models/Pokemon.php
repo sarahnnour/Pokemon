@@ -253,25 +253,23 @@ class Pokemon {
 
     public function receberDano($dano) {
         $this->hp_atual = $this->hp_atual - $dano;
-        if ($this->hp_atual < 0) {
+        if ($this->hp_atual <= 0) {
             $this->hp_atual = 0;
+            // desmaiado perde qualquer condição
+            $this->status = 'Normal';
         }
     }
 
     // Aplica o efeito de um ataque no Pokémon
     public function receberEfeito($efeito) {
-        // só uma condição por vez
-        if ($this->status != 'Normal') {
+        // só uma condição por vez; desmaiado não recebe condição
+        if ($this->status != 'Normal' || $this->estaDesmaiado()) {
             return;
         }
 
         if ($efeito == 'congelar') {
             $this->status = 'Congelado';
-            // reduz a velocidade pela metade (mínimo 1)
-            $this->velocidade = intval($this->velocidade / 2);
-            if ($this->velocidade < 1) {
-                $this->velocidade = 1;
-            }
+            $this->reduzirVelocidade();
         }
         if ($efeito == 'envenenar') {
             $this->status = 'Envenenado';
@@ -281,14 +279,31 @@ class Pokemon {
         }
     }
 
+    // Congelado: velocidade pela metade (mínimo 1)
+    private function reduzirVelocidade() {
+        $this->velocidade = intval($this->velocidade / 2);
+        if ($this->velocidade < 1) {
+            $this->velocidade = 1;
+        }
+    }
+
+    // Usado quando o Pokémon entra em campo: HP e condição vêm do banco.
+    // Se estiver Congelado, já entra com a velocidade reduzida.
+    public function restaurarEstado($hp, $status) {
+        $this->hp_atual = $hp;
+        $this->status = $status;
+        if ($status == 'Congelado') {
+            $this->reduzirVelocidade();
+        }
+    }
+
     // A Batalha chama este método no fim de cada rodada, só para o Pokémon que está em campo.
-    // Envenenado e Queimado perdem 1/8 do HP máximo. Retorna o dano causado.
-    //Mudar depois para cada evolução do pokemon causar um dano diferente de envenenamento (também deve estar conforme o nível)
+    // Envenenado e Queimado perdem 1/16 do HP máximo. Retorna o dano causado.
     public function aplicarDanoDeStatus() {
         $dano = 0;
 
         if ($this->status == 'Envenenado' || $this->status == 'Queimado') {
-            $dano = intval($this->hp_maximo / 8);
+            $dano = intval($this->hp_maximo / 16);
             if ($dano < 1) {
                 $dano = 1;
             }

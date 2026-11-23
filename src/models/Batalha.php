@@ -14,7 +14,7 @@ class Batalha {
     private $terminou = false;
     private $resultado = '';
     private $dinheiroGanho = 0;
-    private $recompensa = 200;
+    private $recompensa = 250;
     private $mensagens = [];
 
     public function __construct($pdo) {
@@ -55,18 +55,16 @@ class Batalha {
         }
 
         $this->jogador = $this->criarPokemon($linha['pokemon']);
-        $this->jogador->setHpAtual($linha['hp_atual']);
-        $this->jogador->setStatus($linha['status_condicao']);
+        $this->jogador->restaurarEstado($linha['hp_atual'], $linha['status_condicao']);
 
         $this->montarAdversarios();
 
         $this->mensagens[] = $this->jogador->getNome() . ' enfrenta ' . $this->inimigo->getNome() . '!';
     }
 
-    // Dificuldade = vitórias / 5 (máximo 8). Número = estágio de evolução de cada adversário:
+    // Dificuldade = vitórias / 5 (máximo 5). Número = estágio de evolução de cada adversário:
     // 0: [1]    1: [1,1]    2: [1,1,1]
     // 3: [2,1,1]    4: [2,2,1]    5: [2,2,2]
-    // 6: [3,2,2]    7: [3,3,2]    8: [3,3,3]
     private function montarAdversarios() {
         // vitórias do usuário (usa a view_vitorias_usuario; sem vitórias não tem linha)
         $sql = "SELECT vitorias FROM view_vitorias_usuario WHERE usuario_id = :usuario_id";
@@ -75,8 +73,8 @@ class Batalha {
         $vitorias = intval($stmt->fetchColumn());
 
         $nivel = intval($vitorias / 5);
-        if ($nivel > 8) {
-            $nivel = 8;
+        if ($nivel > 5) {
+            $nivel = 5;
         }
 
         // quantidade de adversários: 1, 2 ou 3
@@ -91,7 +89,7 @@ class Batalha {
             $estagios[] = 1;
         }
 
-        // a partir do nível 3, um estágio é somado por vez (1º, 2º, 3º, 1º, 2º, 3º)
+        // a partir do nível 3, um estágio é somado por vez (1º, 2º, 3º)
         $evolucoes = $nivel - 2;
         for ($i = 0; $i < $evolucoes; $i++) {
             $estagios[$i % 3] = $estagios[$i % 3] + 1;
@@ -105,8 +103,8 @@ class Batalha {
         $this->inimigo = $this->criarPokemon(array_shift($nomes));
         $this->fila = $nomes;
 
-        // quanto maior a dificuldade, maior o prêmio (200 até 1000)
-        $this->recompensa = 200 + $nivel * 100;
+        // prêmio: 250 por adversário + 50 por nível (250 até 1000)
+        $this->recompensa = 250 * $quantidade + $nivel * 50;
     }
 
     // Sorteia um Pokémon inicial (nível 5) e evolui até o estágio pedido.
@@ -246,7 +244,7 @@ class Batalha {
         }
         $this->acoes[] = ['quem' => $quem, 'pokemon' => $atacante->getNome(), 'golpe' => $golpe['nome']];
 
-        if (isset($golpe['efeito'])) {
+        if (isset($golpe['efeito']) && $alvo->getStatus() != 'Normal') {
             $this->mensagens[] = 'Condição de ' . $alvo->getNome() . ': ' . $alvo->getStatus() . '.';
         }
         if ($alvo->estaDesmaiado()) {
@@ -350,8 +348,7 @@ class Batalha {
         $this->salvarPokemon();
 
         $this->jogador = $this->criarPokemon($linha['pokemon']);
-        $this->jogador->setHpAtual($linha['hp_atual']);
-        $this->jogador->setStatus($linha['status_condicao']);
+        $this->jogador->restaurarEstado($linha['hp_atual'], $linha['status_condicao']);
         $this->mensagens[] = 'Você trocou para ' . $this->jogador->getNome() . '!';
 
         if (!$estavaDesmaiado) {
