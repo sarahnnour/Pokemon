@@ -170,8 +170,11 @@ class Item {
             throw new Exception("Esse Pokémon não está desmaiado");
         }
 
-        // Revive: volta com metade da vida
+        // Revive: metade da vida. Full Revive: vida completa
         $hp = intval($p['hp_maximo'] / 2);
+        if ($item['nome'] == 'Full Revive') {
+            $hp = $p['hp_maximo'];
+        }
         $this->atualizarTime($p, $hp, $p['status_condicao']);
         return $p['pokemon'] . ': reviveu com HP ' . $hp . '/' . $p['hp_maximo'];
     }

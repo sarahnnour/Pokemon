@@ -68,6 +68,10 @@ class Loja {
         if (item.tipo == 'evolucao') {
             return 'moon-stone';
         }
+        // na API o Full Revive se chama max-revive
+        if (item.nome == 'Full Revive') {
+            return 'max-revive';
+        }
         return item.nome.toLowerCase().replaceAll(' ', '-');
     }
 
