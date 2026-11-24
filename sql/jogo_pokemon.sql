@@ -159,9 +159,9 @@ INSERT INTO item (nome, descricao, preco, tipo) VALUES
 -- Restauradores de HP
 ('Potion',        'Recupera 20 HP',                                50,  'restaurador'),
 ('Super Potion',  'Recupera 50 HP',                                100, 'restaurador'),
-('Hyper Potion',  'Recupera 200 HP',                               300, 'restaurador'),
-('Max Potion',    'Recupera 100% do HP',                           400, 'restaurador'),
-('Full Restore',  'Recupera 100% do HP e cura todas as condições', 600, 'restaurador'),
+('Hyper Potion',  'Recupera 200 HP',                               250, 'restaurador'),
+('Max Potion',    'Recupera 100% do HP',                           300, 'restaurador'),
+('Full Restore',  'Recupera 100% do HP e cura todas as condições', 400, 'restaurador'),
 -- Cura de condições
 ('Antidote',      'Cura envenenamento',          50,  'cura'),
 ('Burn Heal',     'Cura queimadura',             50,  'cura'),
@@ -170,7 +170,8 @@ INSERT INTO item (nome, descricao, preco, tipo) VALUES
 ('Paralyze Heal', 'Cura paralisia',              50,  'cura'),
 ('Full Heal',     'Cura todas as condições',     150, 'cura'),
 -- Reviver
-('Revive',        'Revive um Pokémon desmaiado com metade da vida', 400, 'reviver'),
+('Revive',        'Revive um Pokémon desmaiado com metade da vida', 300, 'reviver'),
+('Full Revive',        'Revive um Pokémon desmaiado com a vida completa', 500, 'reviver'),
 -- Evolução
 ('Pedra de Evolução', 'Evolui um Pokémon para o próximo estágio',   1200, 'evolucao');
 
